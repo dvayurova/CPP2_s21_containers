@@ -39,5 +39,4 @@ private:
 };
 } // namespace s21
 
-#include "Stack.tpp"
 #endif //  SRC_STACK_H
