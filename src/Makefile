@@ -19,7 +19,7 @@ clean:
 rebuild: clean all
 
 test: clean
-	$(CC) $(CFLAGS) unit_tests.cc Stack/Stack.h Vector/Vector.h -lgtest -pthread -o test
+	$(CC) $(CFLAGS) unit_tests.cc Stack/Stack.h Vector/Vector.h List/List.h Queue/Queue.h -lgtest -pthread -o test
 	./test
 
 memcheck: test

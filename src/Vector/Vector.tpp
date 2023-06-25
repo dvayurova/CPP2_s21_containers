@@ -1,5 +1,7 @@
 #include "Vector.h"
 
+#include <iostream>
+
 namespace s21 {
 
 template <class T> vector<T>::vector() { zero_vector(); }
@@ -66,15 +68,29 @@ template <class T> typename vector<T>::reference vector<T>::at(size_type pos) {
 }
 
 template <class T>
+typename vector<T>::const_reference vector<T>::at(size_type pos) const {
+  if (pos >= size_) {
+    throw std::out_of_range("range check pos >= size_");
+  }
+  return vector_[pos];
+}
+
+template <class T>
 typename vector<T>::reference vector<T>::operator[](size_type pos) {
   return vector_[pos];
 }
 
-template <class T> typename vector<T>::const_reference vector<T>::front() {
+template <class T>
+typename vector<T>::const_reference vector<T>::operator[](size_type pos) const {
+  return vector_[pos];
+}
+
+template <class T>
+typename vector<T>::const_reference vector<T>::front() const {
   return vector_[0];
 }
 
-template <class T> typename vector<T>::const_reference vector<T>::back() {
+template <class T> typename vector<T>::const_reference vector<T>::back() const {
   return vector_[size_ - 1];
 }
 
@@ -85,13 +101,25 @@ template <class T> typename vector<T>::iterator vector<T>::data() {
 template <class T> typename vector<T>::iterator vector<T>::begin() {
   return vector_;
 }
+template <class T> typename vector<T>::const_iterator vector<T>::begin() const {
+  return vector_;
+}
+
 template <class T> typename vector<T>::iterator vector<T>::end() {
+  return vector_ + size_;
+}
+template <class T> typename vector<T>::const_iterator vector<T>::end() const {
   return vector_ + size_;
 }
 
 template <class T> bool vector<T>::empty() { return size_ == 0; }
+template <class T> bool vector<T>::empty() const { return size_ == 0; }
 template <class T> size_t vector<T>::size() { return size_; }
+template <class T> size_t vector<T>::size() const { return size_; }
 template <class T> size_t vector<T>::max_size() {
+  return std::allocator<T>().max_size();
+}
+template <class T> size_t vector<T>::max_size() const {
   return std::allocator<T>().max_size();
 }
 template <class T> void vector<T>::reserve(size_type size) {
@@ -106,6 +134,7 @@ template <class T> void vector<T>::reserve(size_type size) {
   }
 }
 template <class T> size_t vector<T>::capacity() { return capacity_; }
+template <class T> size_t vector<T>::capacity() const { return capacity_; }
 
 template <class T> void vector<T>::shrink_to_fit() {
   if (capacity_ > size_) {
@@ -127,6 +156,33 @@ template <class T> void vector<T>::clear() {
 
 template <class T>
 typename vector<T>::iterator vector<T>::insert(iterator pos,
+                                               const_reference value) {
+  if (pos < begin() || pos > end()) {
+    throw std::out_of_range("range check pos >= size_");
+  }
+  size_t position = pos - begin();
+  if (size_ + 1 > capacity_) {
+    reserve(size_ * 2);
+  }
+  size_t k = 0;
+  size_ += 1;
+  T *tmp_vector = new T[size_];
+  for (size_t i = 0; i < size_; i++) {
+    if (i == position) {
+      tmp_vector[i] = value;
+      k--;
+    } else {
+      tmp_vector[i] = vector_[k];
+    }
+    k++;
+  }
+  delete[] vector_;
+  vector_ = tmp_vector;
+  return vector_ + position;
+}
+
+template <class T>
+typename vector<T>::iterator vector<T>::insert(const_iterator pos,
                                                const_reference value) {
   if (pos < begin() || pos > end()) {
     throw std::out_of_range("range check pos >= size_");
@@ -197,6 +253,28 @@ template <class T> void vector<T>::zero_vector() {
   vector_ = nullptr;
   size_ = 0;
   capacity_ = 0;
+}
+
+template <class T>
+template <class... Args>
+typename vector<T>::iterator vector<T>::emplace(const_iterator pos,
+                                                Args &&...args) {
+  // size_t position = pos - begin();
+  // for (auto i : {args...}) {
+  //   insert(begin() + position, i);
+  //   position++;
+  // }
+  // return begin() + position;
+  return insert(pos, (args)...);
+}
+
+template <class T>
+template <class... Args>
+void vector<T>::emplace_back(Args &&...args) {
+  // for (auto i : {args...}) {
+  //   push_back(i);
+  // }
+  push_back((args)...);
 }
 
 } // namespace s21

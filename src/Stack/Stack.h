@@ -33,6 +33,9 @@ public:
   void push(const_reference value) { baseClass.push_front(value); };
   void pop() { baseClass.pop_front(); };
   void swap(stack &other) { baseClass.swap(other.baseClass); };
+  template <class... Args> void emplace_front(Args &&...args) {
+    push((args)...);
+  };
 
 private:
   Container baseClass;

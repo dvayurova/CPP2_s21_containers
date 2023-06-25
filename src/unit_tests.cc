@@ -14,6 +14,7 @@
 class VectorTest : public ::testing::Test {
 public:
   s21::vector<int> int_vector = {1, 2, 3, 4, 5, 6};
+  s21::vector<int> const const_vector = {1, 2, 3, 4, 5, 6};
   s21::vector<float> float_vector = {1.342, 2.123, 3.978, 4.43, 5.3, 0};
   s21::vector<double> double_vector = {4.34, 42.1123, 23.123, 6.43, 5.31, 0.02};
   s21::vector<char> char_vector = {'a', 'b', 'c', 'd'};
@@ -21,6 +22,7 @@ public:
   s21::vector<int> empty_vector;
 
   std::vector<int> int_vector_std = {1, 2, 3, 4, 5, 6};
+  std::vector<int> const const_vector_std = {1, 2, 3, 4, 5, 6};
   std::vector<float> float_vector_std = {1.342, 2.123, 3.978, 4.43, 5.3, 0};
   std::vector<double> double_vector_std = {4.34, 42.1123, 23.123,
                                            6.43, 5.31,    0.02};
@@ -33,8 +35,16 @@ TEST_F(VectorTest, TestAt) {
   ASSERT_EQ(int_vector.at(4), int_vector_std.at(4));
 }
 
+TEST_F(VectorTest, TestAtConst) {
+  ASSERT_EQ(const_vector.at(4), const_vector_std.at(4));
+}
+
 TEST_F(VectorTest, TestReferenceOperator) {
   ASSERT_EQ(float_vector[3], float_vector_std[3]);
+}
+
+TEST_F(VectorTest, TestReferenceOperatorConst) {
+  ASSERT_EQ(const_vector[3], const_vector_std[3]);
 }
 
 TEST_F(VectorTest, TestFront) {
@@ -61,6 +71,14 @@ TEST_F(VectorTest, TestBegin) {
   ASSERT_EQ(*it, *it_std);
 }
 
+TEST_F(VectorTest, TestBeginConst) {
+  s21::vector<int>::const_iterator it;
+  it = const_vector.begin();
+  std::vector<int>::const_iterator it_std;
+  it_std = const_vector_std.begin();
+  ASSERT_EQ(*it, *it_std);
+}
+
 TEST_F(VectorTest, TestEnd) {
   s21::vector<int>::iterator it;
   it = int_vector.end() - 1;
@@ -69,13 +87,28 @@ TEST_F(VectorTest, TestEnd) {
   ASSERT_EQ(*it, *it_std);
 }
 
+TEST_F(VectorTest, TestEndConst) {
+  s21::vector<int>::const_iterator it;
+  it = const_vector.end() - 1;
+  std::vector<int>::const_iterator it_std;
+  it_std = const_vector_std.end() - 1;
+  ASSERT_EQ(*it, *it_std);
+}
+
 TEST_F(VectorTest, TestEmpty) { ASSERT_TRUE(empty_vector.empty()); }
 TEST_F(VectorTest, TestEmpty2) { ASSERT_FALSE(string_vector.empty()); }
+TEST_F(VectorTest, TestEmptyConst) { ASSERT_FALSE(const_vector.empty()); }
 TEST_F(VectorTest, TestSize) {
   ASSERT_EQ(string_vector_std.size(), string_vector.size());
 }
+TEST_F(VectorTest, TestSizeConst) {
+  ASSERT_EQ(const_vector.size(), const_vector_std.size());
+}
 TEST_F(VectorTest, TestMaxSize) {
   ASSERT_EQ(string_vector_std.max_size(), string_vector.max_size());
+}
+TEST_F(VectorTest, TestMaxSizeConst) {
+  ASSERT_EQ(const_vector.max_size(), const_vector_std.max_size());
 }
 TEST_F(VectorTest, TestReserve) {
   double_vector.reserve(14);
@@ -84,6 +117,9 @@ TEST_F(VectorTest, TestReserve) {
 }
 TEST_F(VectorTest, TestCapacity) {
   ASSERT_EQ(string_vector_std.capacity(), string_vector.capacity());
+}
+TEST_F(VectorTest, TestCapacityConst) {
+  ASSERT_EQ(const_vector.capacity(), const_vector_std.capacity());
 }
 TEST_F(VectorTest, TestShrinkToFit) {
   double_vector.reserve(20);
@@ -141,6 +177,30 @@ TEST_F(VectorTest, TestSwap) {
   }
   ASSERT_EQ(int_vector.empty(), int_vector_std.empty());
   ASSERT_TRUE(int_vector.empty());
+}
+
+TEST_F(VectorTest, TestEmplace) {
+  int_vector.emplace(int_vector.begin() + 1, 162342);
+  int_vector_std.emplace(int_vector_std.begin() + 1, 162342);
+  ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
+  while (!int_vector.empty() && !int_vector_std.empty()) {
+    ASSERT_EQ(int_vector.back(), int_vector_std.back());
+    int_vector.pop_back();
+    int_vector_std.pop_back();
+  }
+}
+
+TEST_F(VectorTest, TestEmplaceBack) {
+  int_vector.emplace_back(162342);
+  int_vector_std.emplace_back(162342);
+  ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
+  while (!int_vector.empty() && !int_vector_std.empty()) {
+    ASSERT_EQ(int_vector.back(), int_vector_std.back());
+    int_vector.pop_back();
+    int_vector_std.pop_back();
+  }
 }
 
 // Stack
@@ -270,6 +330,23 @@ TEST(StackTest, TestSwap) {
   ASSERT_EQ(int_stack.empty(), int_stack_original.empty());
 }
 
+TEST(StackTest, TestEmplaceFront) {
+  s21::stack<int> int_stack;
+  std::stack<int> int_stack_original;
+  int_stack.push(324);
+  int_stack.push(768678);
+  int_stack.emplace_front(481223);
+  int_stack_original.push(324);
+  int_stack_original.push(768678);
+  int_stack_original.emplace(481223);
+  while (!int_stack.empty() && !int_stack_original.empty()) {
+    ASSERT_EQ(int_stack.top(), int_stack_original.top());
+    int_stack.pop();
+    int_stack_original.pop();
+  }
+  ASSERT_EQ(int_stack.empty(), int_stack_original.empty());
+}
+
 // Queue
 
 TEST(QueueTest, TestDefaultConstructor) {
@@ -383,6 +460,24 @@ TEST(QueueTest, TestSwap) {
   int_queue_original.push(6563);
   int_queue.swap(empty_queue);
   int_queue_original.swap(empty_queue_original);
+  while (!int_queue.empty() && !int_queue_original.empty()) {
+    ASSERT_EQ(int_queue.front(), int_queue_original.front());
+    ASSERT_EQ(int_queue.back(), int_queue_original.back());
+    int_queue.pop();
+    int_queue_original.pop();
+  }
+  ASSERT_EQ(int_queue.empty(), int_queue_original.empty());
+}
+
+TEST(QueueTest, TestEmplaceBack) {
+  s21::queue<int> int_queue;
+  std::queue<int> int_queue_original;
+  int_queue.push(324);
+  int_queue.push(768678);
+  int_queue.emplace_back(481223);
+  int_queue_original.push(324);
+  int_queue_original.push(768678);
+  int_queue_original.emplace(481223);
   while (!int_queue.empty() && !int_queue_original.empty()) {
     ASSERT_EQ(int_queue.front(), int_queue_original.front());
     ASSERT_EQ(int_queue.back(), int_queue_original.back());
@@ -659,6 +754,38 @@ TEST(TestList, Test_Sort) {
   EXPECT_EQ(list1.size(), list2.size());
   for (auto it2 = list2.begin(); it2 != list2.end(); ++it1, ++it2) {
     EXPECT_EQ(*it1, *it2);
+  }
+}
+
+TEST(TestList, Test_Emplace) {
+  std::list<int> std_lst{1, 2, 3, 4, 5};
+  auto std_it = std_lst.begin();
+  ++std_it;
+  ++std_it;
+  std_lst.emplace(std_it, 8);
+
+  s21::list<int> s21_lst{1, 2, 3, 4, 5};
+  auto s21_it = s21_lst.begin();
+  ++s21_it;
+  ++s21_it;
+  s21_lst.emplace(s21_it, 8);
+  std_it = std_lst.begin();
+  for (s21_it = s21_lst.begin(); s21_it != s21_lst.end(); ++s21_it, ++std_it) {
+    EXPECT_EQ(*s21_it, *std_it);
+  }
+
+  std_lst.emplace_front(9);
+  s21_lst.emplace_front(9);
+  std_it = std_lst.begin();
+  for (s21_it = s21_lst.begin(); s21_it != s21_lst.end(); ++s21_it, ++std_it) {
+    EXPECT_EQ(*s21_it, *std_it);
+  }
+
+  std_lst.emplace_back(9);
+  s21_lst.emplace_back(9);
+  std_it = std_lst.begin();
+  for (s21_it = s21_lst.begin(); s21_it != s21_lst.end(); ++s21_it, ++std_it) {
+    EXPECT_EQ(*s21_it, *std_it);
   }
 }
 
