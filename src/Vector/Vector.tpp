@@ -1,4 +1,4 @@
-#include "Vector.h"
+#include "vector.h"
 
 #include <iostream>
 
@@ -6,32 +6,19 @@ namespace s21 {
 
 template <class T> vector<T>::vector() { zero_vector(); }
 
-template <class T> vector<T>::vector(size_t n) {
-  size_ = n;
-  capacity_ = n;
-  vector_ = new T[size_]{};
-}
+template <class T> vector<T>::vector(size_t n) { memory_allocation(n); }
 
 template <class T> vector<T>::vector(std::initializer_list<T> const &items) {
-  size_ = items.size();
-  capacity_ = size_;
-  vector_ = new value_type[size_]{};
+  memory_allocation(items.size());
   std::copy(items.begin(), items.begin() + items.size(), vector_);
 }
 
 template <class T> vector<T>::vector(const vector &v) {
-  size_ = v.size_;
-  capacity_ = size_;
-  vector_ = new T[size_]{};
+  memory_allocation(v.size_);
   std::copy(v.vector_, v.vector_ + v.size_, vector_);
 }
 
-template <class T> vector<T>::vector(vector &&v) noexcept {
-  size_ = v.size_;
-  capacity_ = v.capacity_;
-  vector_ = v.vector_;
-  v.zero_vector();
-}
+template <class T> vector<T>::vector(vector &&v) noexcept { move_vector(v); }
 
 template <class T> vector<T>::~vector() {
   delete[] vector_;
@@ -41,10 +28,7 @@ template <class T> vector<T>::~vector() {
 template <class T> vector<T> &vector<T>::operator=(vector &&v) noexcept {
   if (this != &v) {
     delete[] vector_;
-    size_ = v.size_;
-    capacity_ = v.capacity_;
-    vector_ = v.vector_;
-    v.zero_vector();
+    move_vector(v);
   }
   return *this;
 }
@@ -112,39 +96,21 @@ template <class T> typename vector<T>::const_iterator vector<T>::end() const {
   return vector_ + size_;
 }
 
-template <class T> bool vector<T>::empty() { return size_ == 0; }
 template <class T> bool vector<T>::empty() const { return size_ == 0; }
-template <class T> size_t vector<T>::size() { return size_; }
 template <class T> size_t vector<T>::size() const { return size_; }
-template <class T> size_t vector<T>::max_size() {
-  return std::allocator<T>().max_size();
-}
 template <class T> size_t vector<T>::max_size() const {
   return std::allocator<T>().max_size();
 }
 template <class T> void vector<T>::reserve(size_type size) {
   if (size > capacity_) {
-    T *tmp_vector = new T[size];
-    for (size_t i = 0; i < size_; i++) {
-      tmp_vector[i] = vector_[i];
-    }
-    delete[] vector_;
-    vector_ = tmp_vector;
-    capacity_ = size;
+    change_capacity(size);
   }
 }
-template <class T> size_t vector<T>::capacity() { return capacity_; }
 template <class T> size_t vector<T>::capacity() const { return capacity_; }
 
 template <class T> void vector<T>::shrink_to_fit() {
   if (capacity_ > size_) {
-    T *tmp_vector = new T[size_];
-    for (size_t i = 0; i < size_; i++) {
-      tmp_vector[i] = vector_[i];
-    }
-    delete[] vector_;
-    vector_ = tmp_vector;
-    capacity_ = size_;
+    change_capacity(size_);
   }
 }
 
@@ -152,33 +118,6 @@ template <class T> void vector<T>::clear() {
   size_ = 0;
   delete[] vector_;
   vector_ = nullptr;
-}
-
-template <class T>
-typename vector<T>::iterator vector<T>::insert(iterator pos,
-                                               const_reference value) {
-  if (pos < begin() || pos > end()) {
-    throw std::out_of_range("range check pos >= size_");
-  }
-  size_t position = pos - begin();
-  if (size_ + 1 > capacity_) {
-    reserve(size_ * 2);
-  }
-  size_t k = 0;
-  size_ += 1;
-  T *tmp_vector = new T[size_];
-  for (size_t i = 0; i < size_; i++) {
-    if (i == position) {
-      tmp_vector[i] = value;
-      k--;
-    } else {
-      tmp_vector[i] = vector_[k];
-    }
-    k++;
-  }
-  delete[] vector_;
-  vector_ = tmp_vector;
-  return vector_ + position;
 }
 
 template <class T>
@@ -249,32 +188,44 @@ template <class T> void vector<T>::swap(vector &other) {
   }
 }
 
+template <class T>
+template <class... Args>
+typename vector<T>::iterator vector<T>::insert_many(const_iterator pos,
+                                                    Args &&...args) {
+  return insert(pos, (args)...);
+}
+
+template <class T>
+template <class... Args>
+void vector<T>::insert_many_back(Args &&...args) {
+  push_back((args)...);
+}
+
 template <class T> void vector<T>::zero_vector() {
   vector_ = nullptr;
   size_ = 0;
   capacity_ = 0;
 }
 
-template <class T>
-template <class... Args>
-typename vector<T>::iterator vector<T>::emplace(const_iterator pos,
-                                                Args &&...args) {
-  // size_t position = pos - begin();
-  // for (auto i : {args...}) {
-  //   insert(begin() + position, i);
-  //   position++;
-  // }
-  // return begin() + position;
-  return insert(pos, (args)...);
+template <class T> void vector<T>::memory_allocation(size_t n) {
+  size_ = n;
+  capacity_ = size_;
+  vector_ = new T[size_]{};
 }
 
-template <class T>
-template <class... Args>
-void vector<T>::emplace_back(Args &&...args) {
-  // for (auto i : {args...}) {
-  //   push_back(i);
-  // }
-  push_back((args)...);
+template <class T> void vector<T>::move_vector(vector &&v) {
+  size_ = v.size_;
+  capacity_ = v.capacity_;
+  vector_ = v.vector_;
+  v.zero_vector();
+}
+
+template <class T> void vector<T>::change_capacity(size_t n) {
+  T *tmp_vector = new T[n];
+  std::copy(vector_, end(), tmp_vector);
+  delete[] vector_;
+  vector_ = tmp_vector;
+  capacity_ = n;
 }
 
 } // namespace s21

@@ -2,6 +2,7 @@
 CC = g++
 CFLAGS = -Wall -Werror -Wextra -std=c++17
 GCOVFLAGS = -fprofile-arcs -ftest-coverage
+SOURCES = Stack/stack.h Vector/vector.h List/List.h Queue/Queue.h
 LC = lcov -c -d .
 OS = $(shell uname -s)
 
@@ -19,7 +20,7 @@ clean:
 rebuild: clean all
 
 test: clean
-	$(CC) $(CFLAGS) unit_tests.cc Stack/Stack.h Vector/Vector.h List/List.h Queue/Queue.h -lgtest -pthread -o test
+	$(CC) $(CFLAGS) $(SOURCES) unit_tests.cc -lgtest -pthread -o test
 	./test
 
 memcheck: test
@@ -30,7 +31,7 @@ else
 endif
 
 gcov_report: clean
-	$(CC) $(CFLAGS) $(GCOVFLAGS) -o gcov_test -lgtest -pthread Stack/Stack.h Vector/Vector.h unit_tests.cc
+	$(CC) $(CFLAGS) $(GCOVFLAGS) -o gcov_test -lgtest -pthread $(SOURCES) unit_tests.cc
 	./gcov_test
 	$(LC) -t "gcov_report" --no-external -o report.info || true
 	geninfo . --ignore-errors mismatch --output-filename report.info

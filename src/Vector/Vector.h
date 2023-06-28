@@ -1,5 +1,5 @@
-#ifndef SRC_VECTOR_H_
-#define SRC_VECTOR_H_
+#ifndef SRC_VECTOR_VECTOR_H_
+#define SRC_VECTOR_VECTOR_H_
 
 #include <memory>
 #include <stdexcept>
@@ -38,36 +38,35 @@ public:
   iterator end();
   const_iterator end() const;
 
-  bool empty();
   bool empty() const;
-  size_type size();
   size_type size() const;
-  size_type max_size();
   size_type max_size() const;
   void reserve(size_type size);
-  size_type capacity();
   size_type capacity() const;
   void shrink_to_fit();
 
   void clear();
-  iterator insert(iterator pos, const_reference value);
   iterator insert(const_iterator pos, const_reference value);
   void erase(iterator pos);
   void push_back(const_reference value);
   void pop_back();
   void swap(vector &other);
 
-  template <class... Args> iterator emplace(const_iterator pos, Args &&...args);
-  template <class... Args> void emplace_back(Args &&...args);
+  template <class... Args>
+  iterator insert_many(const_iterator pos, Args &&...args);
+  template <class... Args> void insert_many_back(Args &&...args);
 
 private:
   T *vector_;
   size_type size_;
   size_type capacity_;
   void zero_vector();
+  void memory_allocation(size_t n);
+  void move_vector(vector &&v);
+  void change_capacity(size_t n);
 };
 
 } // namespace s21
 
-#include "Vector.tpp"
-#endif // SRC_VECTOR_H_
+#include "vector.tpp"
+#endif // SRC_VECTOR_VECTOR_H_

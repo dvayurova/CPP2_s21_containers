@@ -2,8 +2,8 @@
 
 #include "List/List.h"
 #include "Queue/Queue.h"
-#include "Stack/Stack.h"
-#include "Vector/Vector.h"
+#include "Stack/stack.h"
+#include "Vector/vector.h"
 #include <list>
 #include <queue>
 #include <stack>
@@ -101,25 +101,17 @@ TEST_F(VectorTest, TestEmptyConst) { ASSERT_FALSE(const_vector.empty()); }
 TEST_F(VectorTest, TestSize) {
   ASSERT_EQ(string_vector_std.size(), string_vector.size());
 }
-TEST_F(VectorTest, TestSizeConst) {
-  ASSERT_EQ(const_vector.size(), const_vector_std.size());
-}
 TEST_F(VectorTest, TestMaxSize) {
   ASSERT_EQ(string_vector_std.max_size(), string_vector.max_size());
-}
-TEST_F(VectorTest, TestMaxSizeConst) {
-  ASSERT_EQ(const_vector.max_size(), const_vector_std.max_size());
 }
 TEST_F(VectorTest, TestReserve) {
   double_vector.reserve(14);
   double_vector_std.reserve(14);
   ASSERT_EQ(double_vector.size(), double_vector_std.size());
+  ASSERT_EQ(double_vector.capacity(), double_vector_std.capacity());
 }
 TEST_F(VectorTest, TestCapacity) {
   ASSERT_EQ(string_vector_std.capacity(), string_vector.capacity());
-}
-TEST_F(VectorTest, TestCapacityConst) {
-  ASSERT_EQ(const_vector.capacity(), const_vector_std.capacity());
 }
 TEST_F(VectorTest, TestShrinkToFit) {
   double_vector.reserve(20);
@@ -127,30 +119,38 @@ TEST_F(VectorTest, TestShrinkToFit) {
   double_vector.shrink_to_fit();
   double_vector_std.shrink_to_fit();
   ASSERT_EQ(double_vector.size(), double_vector_std.size());
+  ASSERT_EQ(double_vector.capacity(), double_vector_std.capacity());
 }
 
 TEST_F(VectorTest, TestClear) {
   double_vector.clear();
   double_vector_std.clear();
   ASSERT_EQ(double_vector.size(), double_vector_std.size());
+  ASSERT_EQ(double_vector.capacity(), double_vector_std.capacity());
 }
 
 TEST_F(VectorTest, TestInsert) {
   char_vector.insert(char_vector.end(), 't');
   char_vector_std.insert(char_vector_std.end(), 't');
   ASSERT_EQ(char_vector_std.back(), char_vector_std.back());
+  ASSERT_EQ(char_vector_std.size(), char_vector_std.size());
+  ASSERT_EQ(char_vector_std.capacity(), char_vector_std.capacity());
 }
 
 TEST_F(VectorTest, TestErase) {
   char_vector.erase(char_vector.end() - 1);
   char_vector_std.erase(char_vector_std.end() - 1);
   ASSERT_EQ(char_vector_std.back(), char_vector_std.back());
+  ASSERT_EQ(char_vector_std.size(), char_vector_std.size());
+  ASSERT_EQ(char_vector_std.capacity(), char_vector_std.capacity());
 }
 
 TEST_F(VectorTest, TestPushBack) {
   int_vector.push_back(481223);
   int_vector_std.push_back(481223);
   ASSERT_EQ(int_vector.back(), int_vector_std.back());
+  ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
 }
 
 TEST_F(VectorTest, TestPushBack2) {
@@ -159,17 +159,25 @@ TEST_F(VectorTest, TestPushBack2) {
   int_vector.push_back(20);
   int_vector_std.push_back(20);
   ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
+  ASSERT_EQ(int_vector.back(), int_vector_std.back());
 }
 
 TEST_F(VectorTest, TestPopBack) {
   int_vector.pop_back();
   int_vector_std.pop_back();
   ASSERT_EQ(int_vector.back(), int_vector_std.back());
+  ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
 }
 
 TEST_F(VectorTest, TestSwap) {
   int_vector.swap(empty_vector);
   int_vector_std.swap(empty_vector_std);
+  ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
+  ASSERT_EQ(empty_vector.size(), empty_vector_std.size());
+  ASSERT_EQ(empty_vector.capacity(), empty_vector_std.capacity());
   while (!empty_vector.empty() && !empty_vector_std.empty()) {
     ASSERT_EQ(empty_vector.back(), empty_vector_std.back());
     empty_vector.pop_back();
@@ -179,8 +187,8 @@ TEST_F(VectorTest, TestSwap) {
   ASSERT_TRUE(int_vector.empty());
 }
 
-TEST_F(VectorTest, TestEmplace) {
-  int_vector.emplace(int_vector.begin() + 1, 162342);
+TEST_F(VectorTest, TestInsertMany) {
+  int_vector.insert_many(int_vector.begin() + 1, 162342);
   int_vector_std.emplace(int_vector_std.begin() + 1, 162342);
   ASSERT_EQ(int_vector.size(), int_vector_std.size());
   ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
@@ -191,8 +199,8 @@ TEST_F(VectorTest, TestEmplace) {
   }
 }
 
-TEST_F(VectorTest, TestEmplaceBack) {
-  int_vector.emplace_back(162342);
+TEST_F(VectorTest, TestInsertManyBack) {
+  int_vector.insert_many_back(162342);
   int_vector_std.emplace_back(162342);
   ASSERT_EQ(int_vector.size(), int_vector_std.size());
   ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
@@ -335,7 +343,7 @@ TEST(StackTest, TestEmplaceFront) {
   std::stack<int> int_stack_original;
   int_stack.push(324);
   int_stack.push(768678);
-  int_stack.emplace_front(481223);
+  int_stack.insert_many_front(481223);
   int_stack_original.push(324);
   int_stack_original.push(768678);
   int_stack_original.emplace(481223);

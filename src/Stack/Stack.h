@@ -1,5 +1,5 @@
-#ifndef SRC_STACK_H
-#define SRC_STACK_H
+#ifndef SRC_STACK_STACK_H_
+#define SRC_STACK_STACK_H_
 
 #include "../List/List.h"
 
@@ -33,7 +33,7 @@ public:
   void push(const_reference value) { baseClass.push_front(value); };
   void pop() { baseClass.pop_front(); };
   void swap(stack &other) { baseClass.swap(other.baseClass); };
-  template <class... Args> void emplace_front(Args &&...args) {
+  template <class... Args> void insert_many_front(Args &&...args) {
     push((args)...);
   };
 
@@ -42,4 +42,4 @@ private:
 };
 } // namespace s21
 
-#endif //  SRC_STACK_H
+#endif //  SRC_STACK_STACK_H_
