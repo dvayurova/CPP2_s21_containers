@@ -1,7 +1,5 @@
 #include "vector.h"
 
-#include <iostream>
-
 namespace s21 {
 
 template <class T> vector<T>::vector() { zero_vector(); }
@@ -10,7 +8,7 @@ template <class T> vector<T>::vector(size_t n) { memory_allocation(n); }
 
 template <class T> vector<T>::vector(std::initializer_list<T> const &items) {
   memory_allocation(items.size());
-  std::copy(items.begin(), items.begin() + items.size(), vector_);
+  std::copy(items.begin(), items.end(), vector_);
 }
 
 template <class T> vector<T>::vector(const vector &v) {
@@ -99,7 +97,8 @@ template <class T> typename vector<T>::const_iterator vector<T>::end() const {
 template <class T> bool vector<T>::empty() const { return size_ == 0; }
 template <class T> size_t vector<T>::size() const { return size_; }
 template <class T> size_t vector<T>::max_size() const {
-  return std::allocator<T>().max_size();
+  return std::min<size_type>(std::allocator<T>().max_size(),
+                             std::numeric_limits<difference_type>::max());
 }
 template <class T> void vector<T>::reserve(size_type size) {
   if (size > capacity_) {

@@ -1,6 +1,7 @@
 #ifndef SRC_VECTOR_VECTOR_H_
 #define SRC_VECTOR_VECTOR_H_
 
+#include <limits>
 #include <memory>
 #include <stdexcept>
 
@@ -14,6 +15,7 @@ public:
   using iterator = T *;
   using const_iterator = const T *;
   using size_type = size_t;
+  using difference_type = std::ptrdiff_t;
 
   vector();
   explicit vector(size_type n);
