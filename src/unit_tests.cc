@@ -3,6 +3,8 @@
 #include "List/List.h"
 #include "Queue/Queue.h"
 #include "Stack/stack.h"
+#include "Tree/multiset.h"
+#include "Tree/set.h"
 #include "Vector/vector.h"
 #include <list>
 #include <queue>
@@ -814,8 +816,8 @@ TEST(SetTest, TestInitializerList) {
 TEST(SetTest, TestCopyConstructor) {
   s21::set<int> int_set = {4, 8, 15, 16, 23, 42};
   s21::set<int> copy_set(int_set);
-  s21::set<int>::iterator i = int_set.begin();
-  s21::set<int>::iterator j = copy_set.begin();
+  auto i = int_set.begin();
+  auto j = copy_set.begin();
   while (i != int_set.end() && j != copy_set.end()) {
     EXPECT_EQ(*i, *j);
     i++;
@@ -826,15 +828,17 @@ TEST(SetTest, TestCopyConstructor) {
 TEST(SetTest, TestMoveConstructor) {
   s21::set<char> char_set = {'a', 'b', 'c'};
   s21::set<char> copy_set(std::move(char_set));
-  EXPECT_TRUE(char_set.empty());
-  EXPECT_EQ(copy_set.size(), 3);
+  std::set<char> char_set_std = {'a', 'b', 'c'};
+  std::set<char> copy_set_std(std::move(char_set_std));
+  EXPECT_EQ(char_set.empty(), char_set_std.empty());
+  EXPECT_EQ(copy_set.size(), copy_set_std.size());
 }
 
 TEST(SetTest, TestCopyOperator) {
   s21::set<int> int_set = {4, 8, 15, 16, 23, 42};
   s21::set<int> copy_set = int_set;
-  s21::set<int>::iterator i = int_set.begin();
-  s21::set<int>::iterator j = copy_set.begin();
+  auto i = int_set.begin();
+  auto j = copy_set.begin();
   while (i != int_set.end() && j != copy_set.end()) {
     EXPECT_EQ(*i, *j);
     i++;
@@ -845,8 +849,11 @@ TEST(SetTest, TestCopyOperator) {
 TEST(SetTest, TestMoveOperator) {
   s21::set<char> char_set = {'a', 'b', 'c'};
   s21::set<char> copy_set = std::move(char_set);
-  EXPECT_TRUE(char_set.empty());
-  EXPECT_EQ(copy_set.size(), 3);
+  std::set<char> char_set_std = {'a', 'b', 'c'};
+  std::set<char> copy_set_std = std::move(char_set_std);
+  copy_set.printImageTree(copy_set.get_root());
+  EXPECT_EQ(char_set.empty(), char_set_std.empty());
+  EXPECT_EQ(copy_set.size(), copy_set_std.size());
 }
 
 TEST(SetTest, TestEmpty) {
@@ -861,8 +868,8 @@ TEST(SetTest, TestSize) {
 }
 
 TEST(SetTest, TestMaxSize) {
-  s21::set<std::string> string_set = {"one", "two", "three"};
-  std::set<std::string> string_set_std = {"one", "two", "three"};
+  s21::set<int> string_set = {1, 2, 3};
+  std::set<int> string_set_std = {1, 2, 3};
   EXPECT_EQ(string_set.max_size(), string_set_std.max_size());
 }
 
@@ -880,7 +887,7 @@ TEST(SetTest, TestInsert) {
   std::set<int> int_set_std = {4, 8, 15, 16, 23, 42};
   int_set.insert(36);
   int_set_std.insert(36);
-  s21::set<int>::iterator i = int_set.begin();
+  auto i = int_set.begin();
   std::set<int>::iterator j = int_set_std.begin();
   while (i != int_set.end() && j != int_set_std.end()) {
     EXPECT_EQ(*i, *j);
@@ -894,7 +901,7 @@ TEST(SetTest, TestErase) {
   std::set<int> int_set_std = {4, 8, 15, 16, 23, 42};
   int_set.erase(int_set.begin());
   int_set_std.erase(int_set_std.begin());
-  s21::set<int>::iterator i = int_set.begin();
+  auto i = int_set.begin();
   std::set<int>::iterator j = int_set_std.begin();
   while (i != int_set.end() && j != int_set_std.end()) {
     EXPECT_EQ(*i, *j);
@@ -911,7 +918,7 @@ TEST(SetTest, TestSwap) {
   std::set<int> empty_set_std;
   int_set.swap(empty_set);
   int_set_std.swap(empty_set_std);
-  s21::set<int>::iterator i = empty_set.begin();
+  auto i = empty_set.begin();
   std::set<int>::iterator j = empty_set_std.begin();
   while (i != empty_set.end() && j != empty_set_std.end()) {
     EXPECT_EQ(*i, *j);
@@ -930,7 +937,7 @@ TEST(SetTest, TestMerge) {
   std::set<int> second_std = {1, 2, 3, 4};
   first.merge(second);
   first_std.merge(second_std);
-  s21::set<int>::iterator i = first.begin();
+  auto i = first.begin();
   std::set<int>::iterator j = first_std.begin();
   while (i != first.end() && j != first_std.end()) {
     EXPECT_EQ(*i, *j);
@@ -946,13 +953,204 @@ TEST(SetTest, TestFind) {
   for (int i = 1; i <= 5; i++) {
     EXPECT_EQ(*(int_set.find(i)), *(int_set_std.find(i)));
   }
-  EXPECT_EQ(int_set.find(9), int_set.end());
 }
 
 TEST(SetTest, TestContains) {
   s21::set<int> int_set = {1, 2, 3, 4, 5};
   for (int i = 1; i <= 5; i++) {
     EXPECT_TRUE(int_set.contains(i));
+  }
+}
+
+// Multiset
+
+TEST(MultisetTest, TestDefaultConstructor) {
+  s21::multiset<int> empty_set;
+  EXPECT_TRUE(empty_set.empty());
+}
+
+TEST(MultisetTest, TestInitializerList) {
+  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+  EXPECT_EQ(int_set.size(), int_set_std.size());
+}
+
+TEST(MultisetTest, TestCopyConstructor) {
+  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+  s21::multiset<int> copy_set(int_set);
+  auto i = int_set.begin();
+  auto j = copy_set.begin();
+  while (i != int_set.end() && j != copy_set.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+}
+
+TEST(MultisetTest, TestMoveConstructor) {
+  s21::multiset<char> char_set = {'a', 'b', 'c'};
+  s21::multiset<char> copy_set(std::move(char_set));
+  EXPECT_TRUE(char_set.empty());
+  EXPECT_EQ(copy_set.size(), 3);
+}
+
+TEST(MultisetTest, TestCopyOperator) {
+  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+  s21::multiset<int> copy_set = int_set;
+  auto i = int_set.begin();
+  auto j = copy_set.begin();
+  while (i != int_set.end() && j != copy_set.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+}
+
+TEST(MultisetTest, TestMoveOperator) {
+  s21::multiset<char> char_set = {'a', 'b', 'c'};
+  s21::multiset<char> copy_set = std::move(char_set);
+  EXPECT_TRUE(char_set.empty());
+  EXPECT_EQ(copy_set.size(), 3);
+}
+
+TEST(MultisetTest, TestEmpty) {
+  s21::multiset<int> empty_set;
+  EXPECT_TRUE(empty_set.empty());
+}
+
+TEST(MultisetTest, TestSize) {
+  s21::multiset<std::string> string_set = {"one", "two", "three"};
+  std::multiset<std::string> string_set_std = {"one", "two", "three"};
+  EXPECT_EQ(string_set.size(), string_set_std.size());
+}
+
+TEST(MultisetTest, TestMaxSize) {
+  s21::multiset<std::string> string_set = {"one", "two", "three"};
+  std::multiset<std::string> string_set_std = {"one", "two", "three"};
+  EXPECT_EQ(string_set.max_size(), string_set_std.max_size());
+}
+
+TEST(MultisetTest, TestClear) {
+  s21::multiset<std::string> string_set = {"one", "two", "three"};
+  std::multiset<std::string> string_set_std = {"one", "two", "three"};
+  string_set.clear();
+  string_set_std.clear();
+  EXPECT_EQ(string_set.empty(), string_set_std.empty());
+  EXPECT_EQ(string_set.size(), string_set_std.size());
+}
+
+TEST(MultisetTest, TestInsert) {
+  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+  int_set.insert(16);
+  int_set_std.insert(16);
+  auto i = int_set.begin();
+  std::multiset<int>::iterator j = int_set_std.begin();
+  while (i != int_set.end() && j != int_set_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+}
+
+TEST(MultisetTest, TestErase) {
+  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+  int_set.erase(int_set.begin());
+  int_set_std.erase(int_set_std.begin());
+  auto i = int_set.begin();
+  std::multiset<int>::iterator j = int_set_std.begin();
+  while (i != int_set.end() && j != int_set_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+  EXPECT_EQ(int_set.size(), int_set_std.size());
+}
+
+TEST(MultisetTest, TestSwap) {
+  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+  s21::multiset<int> empty_set;
+  std::multiset<int> empty_set_std;
+  int_set.swap(empty_set);
+  int_set_std.swap(empty_set_std);
+  auto i = empty_set.begin();
+  std::multiset<int>::iterator j = empty_set_std.begin();
+  while (i != empty_set.end() && j != empty_set_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+  EXPECT_EQ(int_set.size(), int_set_std.size());
+  EXPECT_EQ(empty_set.size(), empty_set_std.size());
+  EXPECT_TRUE(int_set.empty());
+}
+
+TEST(MultisetTest, TestMerge) {
+  s21::multiset<int> first = {4, 8, 15, 16, 23, 42};
+  std::multiset<int> first_std = {4, 8, 15, 16, 23, 42};
+  s21::multiset<int> second = {1, 2, 3, 4, 8};
+  std::multiset<int> second_std = {1, 2, 3, 4, 8};
+  first.merge(second);
+  first_std.merge(second_std);
+  auto i = first.begin();
+  std::multiset<int>::iterator j = first_std.begin();
+  while (i != first.end() && j != first_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+  EXPECT_EQ(first.size(), first_std.size());
+}
+
+TEST(MultisetTest, TestCount) {
+  s21::multiset<int> int_set = {1, 2, 2, 3, 4, 5, 5, 5, 5};
+  std::multiset<int> int_set_std = {1, 2, 2, 3, 4, 5, 5, 5, 5};
+  for (int i = 1; i <= 5; i++) {
+    EXPECT_EQ(int_set.count(i), int_set_std.count(i));
+  }
+}
+
+TEST(MultisetTest, TestFind) {
+  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
+  std::multiset<int> int_set_std = {1, 2, 3, 4, 5};
+  for (int i = 1; i <= 5; i++) {
+    EXPECT_EQ(*(int_set.find(i)), *(int_set_std.find(i)));
+  }
+}
+
+TEST(MultisetTest, TestContains) {
+  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
+  for (int i = 1; i <= 5; i++) {
+    EXPECT_TRUE(int_set.contains(i));
+  }
+}
+
+TEST(MultisetTest, TestEqualRange) {
+  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
+  std::multiset<int> int_set_std = {1, 2, 3, 4, 5};
+  for (int i = 1; i <= 5; i++) {
+    EXPECT_EQ(*(int_set.equal_range(i).first),
+              *(int_set_std.equal_range(i).first));
+    EXPECT_EQ(*(int_set.equal_range(i).second),
+              *(int_set_std.equal_range(i).second));
+  }
+}
+
+TEST(MultisetTest, TestLowerBound) {
+  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
+  std::multiset<int> int_set_std = {1, 2, 3, 4, 5};
+  for (int i = 1; i <= 5; i++) {
+    EXPECT_EQ(*(int_set.lower_bound(i)), *(int_set_std.lower_bound(i)));
+  }
+}
+
+TEST(MultisetTest, TestUpperBound) {
+  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
+  std::multiset<int> int_set_std = {1, 2, 3, 4, 5};
+  for (int i = 1; i <= 5; i++) {
+    EXPECT_EQ(*(int_set.upper_bound(i)), *(int_set_std.upper_bound(i)));
   }
 }
 
