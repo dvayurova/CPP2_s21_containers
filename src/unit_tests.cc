@@ -3,6 +3,7 @@
 #include "List/List.h"
 #include "Queue/Queue.h"
 #include "Stack/stack.h"
+#include "Tree/map.h"
 #include "Tree/multiset.h"
 #include "Tree/set.h"
 #include "Vector/vector.h"
@@ -361,142 +362,138 @@ TEST(StackTest, TestEmplaceFront) {
 
 // Queue
 
-TEST(QueueTest, TestDefaultConstructor) {
-  s21::queue<int> int_queue;
-  std::queue<int> int_queue_original;
-  ASSERT_EQ(int_queue.size(), int_queue_original.size());
+TEST(TestQueue, Constructor_Default) {
+  std::queue<int> queue_1;
+  s21::queue<int> queue_2;
+  EXPECT_EQ(queue_1.empty(), queue_2.empty());
+  EXPECT_EQ(queue_1.size(), queue_2.size());
 }
 
-TEST(QueueTest, TestCopyConstructor) {
-  s21::queue<int> my_queue;
-  std::queue<int> original_queue;
-  for (int i = 0; i <= 5; i++) {
-    my_queue.push(i);
-    original_queue.push(i);
+TEST(TestQueue, Constructor_Init) {
+  std::deque<int> numbers = {1, 2, 3};
+  std::queue<int> std_queue{numbers};
+  s21::queue<int> s21_queue = {1, 2, 3};
+  while (!s21_queue.empty()) {
+    EXPECT_EQ(s21_queue.front(), std_queue.front());
+    s21_queue.pop();
+    std_queue.pop();
   }
-  s21::queue<int> my_queue_copy(my_queue);
-  std::queue<int> original_queue_copy(original_queue);
-  while (!my_queue_copy.empty() && !original_queue_copy.empty()) {
-    ASSERT_EQ(my_queue_copy.front(), original_queue_copy.front());
-    ASSERT_EQ(my_queue_copy.back(), original_queue_copy.back());
-    my_queue_copy.pop();
-    original_queue_copy.pop();
-  }
-  ASSERT_EQ(my_queue_copy.empty(), original_queue_copy.empty());
 }
 
-TEST(QueueTest, TestMoveConstructor) {
-  s21::queue<int> my_queue;
-  std::queue<int> original_queue;
-  for (int i = 0; i <= 5; i++) {
-    my_queue.push(i);
-    original_queue.push(i);
+TEST(TestQueue, Constructor_Copy) {
+  std::deque<int> numbers = {1, 2, 3};
+  std::queue<int> std_queue{numbers};
+  std::queue<int> std_queue_2(std_queue);
+  std::queue<int> std_queue_3;
+  std_queue_3 = std_queue_2;
+
+  s21::queue<int> s21_queue{1, 2, 3};
+  s21::queue<int> s21_queue_2(s21_queue);
+  s21::queue<int> s21_queue_3;
+  s21_queue_3 = s21_queue_2;
+
+  EXPECT_EQ(std_queue.size(), s21_queue.size());
+  EXPECT_EQ(std_queue_2.size(), std_queue_2.size());
+  EXPECT_EQ(std_queue_3.size(), s21_queue_3.size());
+  while (!s21_queue.empty()) {
+    EXPECT_EQ(s21_queue.front(), std_queue.front());
+    EXPECT_EQ(s21_queue_2.front(), std_queue_2.front());
+    EXPECT_EQ(s21_queue_3.front(), std_queue_3.front());
+    s21_queue.pop();
+    std_queue.pop();
+    s21_queue_2.pop();
+    std_queue_2.pop();
+    s21_queue_3.pop();
+    std_queue_3.pop();
   }
-  s21::queue<int> my_queue_copy(std::move(my_queue));
-  std::queue<int> original_queue_copy(std::move(original_queue));
-  while (!my_queue_copy.empty() && !original_queue_copy.empty()) {
-    ASSERT_EQ(my_queue_copy.front(), original_queue_copy.front());
-    ASSERT_EQ(my_queue_copy.back(), original_queue_copy.back());
-    my_queue_copy.pop();
-    original_queue_copy.pop();
-  }
-  ASSERT_EQ(my_queue_copy.empty(), original_queue_copy.empty());
 }
 
-TEST(QueueTest, TestCopyOperator) {
-  s21::queue<int> my_queue;
-  std::queue<int> original_queue;
-  for (int i = 0; i <= 5; i++) {
-    my_queue.push(i);
-    original_queue.push(i);
+TEST(TestQueue, Constructor_Move) {
+  std::deque<int> numbers = {1, 2, 3};
+  std::queue<int> std_queue{numbers};
+  std::queue<int> std_queue_2(std::move(std_queue));
+  s21::queue<int> s21_queue{1, 2, 3};
+  s21::queue<int> s21_queue_2(std::move(s21_queue));
+  EXPECT_EQ(s21_queue.empty(), std_queue.empty());
+  while (!s21_queue_2.empty()) {
+    EXPECT_EQ(s21_queue_2.front(), std_queue_2.front());
+    s21_queue_2.pop();
+    std_queue_2.pop();
   }
-  s21::queue<int> my_queue_copy = my_queue;
-  std::queue<int> original_queue_copy = original_queue;
-  while (!my_queue_copy.empty() && !original_queue_copy.empty()) {
-    ASSERT_EQ(my_queue_copy.front(), original_queue_copy.front());
-    ASSERT_EQ(my_queue_copy.back(), original_queue_copy.back());
-    my_queue_copy.pop();
-    original_queue_copy.pop();
+
+  std::queue<int> std_queue_3{numbers};
+  std_queue_2 = std::move(std_queue_3);
+
+  s21::queue<int> s21_queue_3{1, 2, 3};
+  s21_queue_2 = std::move(s21_queue_3);
+
+  EXPECT_EQ(s21_queue_3.empty(), std_queue_3.empty());
+  while (!s21_queue_2.empty()) {
+    EXPECT_EQ(s21_queue_2.front(), std_queue_2.front());
+    s21_queue_2.pop();
+    std_queue_2.pop();
   }
-  ASSERT_EQ(my_queue_copy.empty(), original_queue_copy.empty());
 }
 
-TEST(QueueTest, TestMoveOperator) {
-  s21::queue<int> my_queue;
-  std::queue<int> original_queue;
-  for (int i = 0; i <= 5; i++) {
-    my_queue.push(i);
-    original_queue.push(i);
+TEST(TestQueue, Test_Push) {
+  std::queue<int> queue_1;
+  s21::queue<int> queue_2;
+  for (int i = 0; i < 5; ++i) {
+    queue_1.push(i);
+    queue_2.push(i);
+    EXPECT_EQ(queue_1.size(), queue_2.size());
+    EXPECT_EQ(queue_1.back(), queue_2.back());
   }
-  s21::queue<int> my_queue_copy = std::move(my_queue);
-  std::queue<int> original_queue_copy = std::move(original_queue);
-  while (!my_queue_copy.empty() && !original_queue_copy.empty()) {
-    ASSERT_EQ(my_queue_copy.front(), original_queue_copy.front());
-    ASSERT_EQ(my_queue_copy.back(), original_queue_copy.back());
-    my_queue_copy.pop();
-    original_queue_copy.pop();
-  }
-  ASSERT_EQ(my_queue_copy.empty(), original_queue_copy.empty());
 }
 
-TEST(QueueTest, TestEmpty) {
-  s21::queue<int> int_queue;
-  std::queue<int> int_queue_original;
-  ASSERT_EQ(int_queue.empty(), int_queue_original.empty());
-  ASSERT_TRUE(int_queue.empty());
-  ASSERT_TRUE(int_queue_original.empty());
+TEST(TestQueue, Test_Push_2) {
+  std::deque<std::string> str = {"I Love School"};
+  std::queue<std::string> queue_1{str};
+  s21::queue<std::string> queue_2 = {"I Love School"};
+  queue_1.push(" S21");
+  queue_2.push(" S21");
+  EXPECT_EQ(queue_1.size(), queue_2.size());
+  while (!queue_2.empty()) {
+    EXPECT_EQ(queue_1.front(), queue_2.front());
+    queue_1.pop();
+    queue_2.pop();
+  }
 }
 
-TEST(QueueTest, TestSize) {
-  s21::queue<std::string> my_queue;
-  std::queue<std::string> original_queue;
-  for (int i = 0; i <= 5; i += 4) {
-    my_queue.push("string");
-    original_queue.push("string");
+TEST(TestQueue, Test_Swap) {
+  std::deque<std::string> str = {"School S21", " in ", "Kazan"};
+  std::queue<std::string> std_queue{str};
+  s21::queue<std::string> s21_queue = {"School S21", " in ", "Kazan"};
+  std::deque<std::string> str_2 = {"I ", "from ", "Dagestan"};
+  std::queue<std::string> std_queue_2{str_2};
+  s21::queue<std::string> s21_queue_2 = {"I ", "from ", "Dagestan"};
+  std_queue.swap(std_queue_2);
+  s21_queue.swap(s21_queue_2);
+  while (!std_queue.empty()) {
+    EXPECT_EQ(s21_queue.front(), std_queue.front());
+    s21_queue.pop();
+    std_queue.pop();
   }
-  ASSERT_EQ(my_queue.size(), original_queue.size());
+  while (!std_queue_2.empty()) {
+    EXPECT_EQ(s21_queue_2.front(), std_queue_2.front());
+    s21_queue_2.pop();
+    std_queue_2.pop();
+  }
 }
 
-TEST(QueueTest, TestSwap) {
-  s21::queue<int> int_queue;
-  std::queue<int> int_queue_original;
-  s21::queue<int> empty_queue;
-  std::queue<int> empty_queue_original;
-  int_queue.push(324);
-  int_queue.push(768678);
-  int_queue.push(54342);
-  int_queue.push(6563);
-  int_queue_original.push(324);
-  int_queue_original.push(768678);
-  int_queue_original.push(54342);
-  int_queue_original.push(6563);
-  int_queue.swap(empty_queue);
-  int_queue_original.swap(empty_queue_original);
-  while (!int_queue.empty() && !int_queue_original.empty()) {
-    ASSERT_EQ(int_queue.front(), int_queue_original.front());
-    ASSERT_EQ(int_queue.back(), int_queue_original.back());
-    int_queue.pop();
-    int_queue_original.pop();
+TEST(TestQueue, Test_InsertManyBack) {
+  std::deque<int> numbers = {1, 2, 3, 4, 5};
+  std::queue<int> std_queue{numbers};
+  s21::queue<int> s21_queue = {1, 2, 3, 4, 5};
+  for (int i = 6; i < 8; ++i) {
+    std_queue.push(i);
   }
-  ASSERT_EQ(int_queue.empty(), int_queue_original.empty());
-}
-
-TEST(QueueTest, TestEmplaceBack) {
-  s21::queue<int> int_queue;
-  std::queue<int> int_queue_original;
-  int_queue.push(324);
-  int_queue.push(768678);
-  int_queue.emplace_back(481223);
-  int_queue_original.push(324);
-  int_queue_original.push(768678);
-  int_queue_original.emplace(481223);
-  while (!int_queue.empty() && !int_queue_original.empty()) {
-    ASSERT_EQ(int_queue.front(), int_queue_original.front());
-    ASSERT_EQ(int_queue.back(), int_queue_original.back());
-    int_queue.pop();
-    int_queue_original.pop();
+  s21_queue.insert_many_back(6, 7, 8);
+  while (!std_queue.empty()) {
+    EXPECT_EQ(s21_queue.front(), std_queue.front());
+    s21_queue.pop();
+    std_queue.pop();
   }
-  ASSERT_EQ(int_queue.empty(), int_queue_original.empty());
 }
 
 // List
@@ -768,33 +765,39 @@ TEST(TestList, Test_Sort) {
     EXPECT_EQ(*it1, *it2);
   }
 }
-
-TEST(TestList, Test_Emplace) {
+TEST(TestList, Test_InsertMany) {
   std::list<int> std_lst{1, 2, 3, 4, 5};
   auto std_it = std_lst.begin();
   ++std_it;
   ++std_it;
-  std_lst.emplace(std_it, 8);
-
+  auto std_i = std_it;
+  for (int data = 6; data < 9; ++data) {
+    std_i = std_lst.insert(std_it, data);
+  }
   s21::list<int> s21_lst{1, 2, 3, 4, 5};
   auto s21_it = s21_lst.begin();
   ++s21_it;
   ++s21_it;
-  s21_lst.emplace(s21_it, 8);
+  auto s21_i = s21_lst.insert_many(s21_it, 6, 7, 8);
+  std_it = std_lst.begin();
+  for (s21_it = s21_lst.begin(); s21_it != s21_lst.end(); ++s21_it, ++std_it) {
+    EXPECT_EQ(*s21_it, *std_it);
+  }
+  EXPECT_EQ(*s21_i, *std_i);
+
+  for (int data = -2; data < 1; ++data) {
+    std_lst.push_front(data);
+  }
+  s21_lst.insert_many_front(-2, -1, 0);
   std_it = std_lst.begin();
   for (s21_it = s21_lst.begin(); s21_it != s21_lst.end(); ++s21_it, ++std_it) {
     EXPECT_EQ(*s21_it, *std_it);
   }
 
-  std_lst.emplace_front(9);
-  s21_lst.emplace_front(9);
-  std_it = std_lst.begin();
-  for (s21_it = s21_lst.begin(); s21_it != s21_lst.end(); ++s21_it, ++std_it) {
-    EXPECT_EQ(*s21_it, *std_it);
+  for (int data = 10; data < 15; ++data) {
+    std_lst.push_back(data);
   }
-
-  std_lst.emplace_back(9);
-  s21_lst.emplace_back(9);
+  s21_lst.insert_many_back(10, 11, 12, 13, 14);
   std_it = std_lst.begin();
   for (s21_it = s21_lst.begin(); s21_it != s21_lst.end(); ++s21_it, ++std_it) {
     EXPECT_EQ(*s21_it, *std_it);
@@ -852,7 +855,6 @@ TEST(SetTest, TestMoveOperator) {
   s21::set<char> copy_set = std::move(char_set);
   std::set<char> char_set_std = {'a', 'b', 'c'};
   std::set<char> copy_set_std = std::move(char_set_std);
-  copy_set.printImageTree(copy_set.get_root());
   EXPECT_EQ(char_set.empty(), char_set_std.empty());
   EXPECT_EQ(copy_set.size(), copy_set_std.size());
 }
@@ -1026,9 +1028,9 @@ TEST(MultisetTest, TestSize) {
 }
 
 TEST(MultisetTest, TestMaxSize) {
-  s21::multiset<std::string> string_set = {"one", "two", "three"};
-  std::multiset<std::string> string_set_std = {"one", "two", "three"};
-  EXPECT_EQ(string_set.max_size(), string_set_std.max_size());
+  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+  EXPECT_EQ(int_set.max_size(), int_set_std.max_size());
 }
 
 TEST(MultisetTest, TestClear) {
@@ -1157,16 +1159,16 @@ TEST(MultisetTest, TestUpperBound) {
 
 // Map
 
-// TEST(MapTest, TestDefaultConstructor) {
-//   s21::map<int, char> empty_map;
-//   EXPECT_TRUE(empty_map.empty());
-// }
+TEST(MapTest, TestDefaultConstructor) {
+  s21::map<int, char> empty_map;
+  EXPECT_TRUE(empty_map.empty());
+}
 
-// TEST(MapTest, TestInitializerList) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   EXPECT_EQ(my_map.size(), std_map.size());
-// }
+TEST(MapTest, TestInitializerList) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  EXPECT_EQ(my_map.size(), std_map.size());
+}
 
 // TEST(MapTest, TestCopyConstructor) {
 //   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
@@ -1181,12 +1183,12 @@ TEST(MultisetTest, TestUpperBound) {
 //   }
 // }
 
-// TEST(MapTest, TestMoveConstructor) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   s21::map<int, char> copy_map(std::move(char_map));
-//   EXPECT_TRUE(my_map.empty());
-//   EXPECT_EQ(copy_map.size(), 3);
-// }
+TEST(MapTest, TestMoveConstructor) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  s21::map<int, char> copy_map(std::move(my_map));
+  EXPECT_TRUE(my_map.empty());
+  EXPECT_EQ(copy_map.size(), 3);
+}
 
 // TEST(MapTest, TestCopyOperator) {
 //   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
@@ -1200,12 +1202,12 @@ TEST(MultisetTest, TestUpperBound) {
 //   }
 // }
 
-// TEST(MapTest, TestMoveOperator) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   s21::map<int, char> copy_map = std::move(my_map);
-//   EXPECT_TRUE(my_map.empty());
-//   EXPECT_EQ(copy_map.size(), 3);
-// }
+TEST(MapTest, TestMoveOperator) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  s21::map<int, char> copy_map = std::move(my_map);
+  EXPECT_TRUE(my_map.empty());
+  EXPECT_EQ(copy_map.size(), 3);
+}
 
 // TEST(MapTest, TestAt) {
 //   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
@@ -1223,38 +1225,36 @@ TEST(MultisetTest, TestUpperBound) {
 //   }
 // }
 
-// TEST(MapTest, TestEmpty) {
-//   s21::map<int, char> my_empty_map;
-//   std::map<int, char> std_empty_map;
-//   EXPECT_EQ(my_empty_map.empty(), std_empty_map.empty());
-// }
+TEST(MapTest, TestEmpty) {
+  s21::map<int, char> my_empty_map;
+  std::map<int, char> std_empty_map;
+  EXPECT_EQ(my_empty_map.empty(), std_empty_map.empty());
+}
 
-// TEST(MapTest, TestSize) {
-//   s21::map<int, std::string> string_map = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   std::map<int, std::string> string_map_std = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   EXPECT_EQ(string_map.size(), string_map_std.size());
-// }
+TEST(MapTest, TestSize) {
+  s21::map<int, std::string> string_map = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  std::map<int, std::string> string_map_std = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  EXPECT_EQ(string_map.size(), string_map_std.size());
+}
 
-// TEST(MapTest, TestMaxSize) {
-//   s21::map<int, std::string> string_map = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   std::map<int, std::string> string_map_std = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   EXPECT_EQ(string_map.max_size(), string_map_std.max_size());
-// }
+TEST(MapTest, TestMaxSize) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  EXPECT_EQ(my_map.max_size(), std_map.max_size());
+}
 
-// TEST(MapTest, TestClear) {
-//   s21::map<int, std::string> string_map = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   std::map<int, std::string> string_map_std = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   string_map.clear();
-//   string_map_std.clear();
-//   EXPECT_EQ(string_map.empty(), string_map_std.empty());
-//   EXPECT_EQ(string_map.size(), string_map_std.size());
-// }
+TEST(MapTest, TestClear) {
+  s21::map<int, std::string> string_map = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  std::map<int, std::string> string_map_std = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  string_map.clear();
+  string_map_std.clear();
+  EXPECT_EQ(string_map.empty(), string_map_std.empty());
+  EXPECT_EQ(string_map.size(), string_map_std.size());
+}
 
 // TEST(MapTest, TestInsertPair) {
 //   s21::map<int, std::string> string_map = {
@@ -1361,13 +1361,13 @@ TEST(MultisetTest, TestUpperBound) {
 //   EXPECT_EQ(first.size(), first_std.size());
 // }
 
-// TEST(MapTest, TestContains) {
-//   s21::map<int, char> my_map = {
-//       {1, 'a'}, {2, 'b'}, {3, 'c'}, {4, 'd'}, {5, 'f'}};
-//   for (int i = 1; i <= 5; i++) {
-//     EXPECT_TRUE(my_map.contains(i));
-//   }
-// }
+TEST(MapTest, TestContains) {
+  s21::map<int, char> my_map = {
+      {1, 'a'}, {2, 'b'}, {3, 'c'}, {4, 'd'}, {5, 'f'}};
+  for (int i = 1; i <= 5; i++) {
+    EXPECT_TRUE(my_map.contains(i));
+  }
+}
 
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);

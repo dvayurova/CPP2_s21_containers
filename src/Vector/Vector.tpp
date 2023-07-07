@@ -191,13 +191,20 @@ template <class T>
 template <class... Args>
 typename vector<T>::iterator vector<T>::insert_many(const_iterator pos,
                                                     Args &&...args) {
-  return insert(pos, (args)...);
+  size_t position = pos - begin();
+  for (auto i : {args...}) {
+    insert(begin() + position, i);
+    position++;
+  }
+  return begin() + position;
 }
 
 template <class T>
 template <class... Args>
 void vector<T>::insert_many_back(Args &&...args) {
-  push_back((args)...);
+  for (auto i : {args...}) {
+    push_back(i);
+  }
 }
 
 template <class T> void vector<T>::zero_vector() {

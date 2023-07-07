@@ -34,7 +34,9 @@ public:
   void pop() { baseClass.pop_front(); };
   void swap(stack &other) { baseClass.swap(other.baseClass); };
   template <class... Args> void insert_many_front(Args &&...args) {
-    push((args)...);
+    for (auto i : {args...}) {
+      push(i);
+    }
   };
 
 private:
