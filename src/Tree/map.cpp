@@ -95,36 +95,32 @@ std::pair<typename map<Key, T>::iterator, bool>
 map<Key, T>::insert_or_assign(const Key &key, const T &obj) {
   node_type *current_node = this->root_;
   node_type *parent = this->nil_.get();
-  bool insert = true;
-  while (current_node != this->nil_.get() && insert) {
+  while (current_node != this->nil_.get()) {
     parent = current_node;
     if (this->compare_(parent->key_, key))
       current_node = current_node->right_;
     else if (this->compare_(key, parent->key_))
       current_node = current_node->left_;
-    else
-      insert = false;
+    else {
+      current_node->value_ = obj;
+      return std::pair<iterator, bool>(find(current_node->key_), false);
+    }
   }
   node_type *new_node = new node_type(key, obj);
   new_node->parent_ = parent;
-  if (!insert) {
-    copyNode(new_node, current_node);
-    delete current_node;
-  } else {
-    if (parent == this->nil_.get())
-      this->root_ = new_node;
-    else if (this->compare_(parent->key_, key))
-      parent->right_ = new_node;
-    else
-      parent->left_ = new_node;
-    this->balanceAfterInsert(new_node);
-  }
-  return std::pair<iterator, bool>(find(new_node->key_), insert);
+  if (parent == this->nil_.get())
+    this->root_ = new_node;
+  else if (this->compare_(parent->key_, key))
+    parent->right_ = new_node;
+  else
+    parent->left_ = new_node;
+  this->balanceAfterInsert(new_node);
+  return std::pair<iterator, bool>(find(new_node->key_), true);
 }
 
 template <class Key, class T>
-void map<Key, T>::copyNode(typename RedBlackTree<Key, T>::Node *&in,
-                           typename RedBlackTree<Key, T>::Node *&out) {
+void map<Key, T>::copyNode(typename set<Key, T>::Node *&in,
+                           typename set<Key, T>::Node *&out) {
   in->color_ = out->color_;
   in->parent_ = out->parent_;
   (in->parent_->left_ == out) ? in->parent_->left_ = in
@@ -150,15 +146,15 @@ typename map<Key, T>::iterator map<Key, T>::find(const Key &key) {
 }
 
 template <class Key, class T> void map<Key, T>::erase(iterator pos) {
-  typename RedBlackTree<Key, T>::iterator it;
+  typename set<Key, T>::iterator it;
   it.node_ = pos.node_;
   it.past_node_ = pos.past_node_;
-  RedBlackTree<Key, T>::erase(it);
+  set<Key, T>::erase(it);
 }
 
 template <class Key, class T> void map<Key, T>::merge(map &other) {
   if (this->root_ == this->nil_.get())
-    RedBlackTree<Key, T>::swap(other);
+    set<Key, T>::swap(other);
   else {
     iterator iter = other.begin();
     iterator next_iter = other.begin();

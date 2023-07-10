@@ -1,9 +1,9 @@
 #ifndef TREE_MAP_H
 #define TREE_MAP_H
-#include "RedBlackTree.h"
+#include "set.h"
 
 namespace s21 {
-template <class Key, class T> class map : public RedBlackTree<Key, T> {
+template <class Key, class T> class map : public set<Key, T> {
 public:
   struct ConstIteratorMap;
   struct IteratorMap;
@@ -15,12 +15,12 @@ public:
   using iterator = IteratorMap;
   using const_iterator = ConstIteratorMap;
   using size_type = std::size_t;
-  using node_type = typename RedBlackTree<Key, T>::Node;
+  using node_type = typename set<Key, T>::Node;
 
-  struct ConstIteratorMap : RedBlackTree<Key, T>::ConstIterator {
-    ConstIteratorMap() : RedBlackTree<Key, T>::ConstIterator(){};
+  struct ConstIteratorMap : set<Key, T>::ConstIterator {
+    ConstIteratorMap() : set<Key, T>::ConstIterator(){};
     explicit ConstIteratorMap(node_type *node)
-        : RedBlackTree<Key, T>::ConstIterator(node){};
+        : set<Key, T>::ConstIterator(node){};
     value_type operator*();
   };
 
@@ -29,11 +29,11 @@ public:
     explicit IteratorMap(node_type *node) : ConstIteratorMap(node){};
   };
 
-  map() : RedBlackTree<key_type, mapped_type>(){};
+  map() : set<key_type, mapped_type>(){};
   map(std::initializer_list<value_type> const &items);
-  map(const map &m) : RedBlackTree<key_type, mapped_type>(m){};
+  map(const map &m) : set<key_type, mapped_type>(m){};
   map &operator=(const map &other);
-  map(map &&m) : RedBlackTree<key_type, mapped_type>(std::move(m)){};
+  map(map &&m) : set<key_type, mapped_type>(std::move(m)){};
   map &operator=(map &&other);
   ~map() = default;
 

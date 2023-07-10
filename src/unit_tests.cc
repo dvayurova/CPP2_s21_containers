@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "List/List.h"
-#include "Queue/Queue.h"
+#include "List/list.h"
+#include "Queue/queue.h"
 #include "Stack/stack.h"
 #include "Tree/map.h"
 #include "Tree/multiset.h"
@@ -218,161 +218,146 @@ TEST_F(VectorTest, TestInsertManyBack) {
 
 // Stack
 
-TEST(StackTest, TestDefaultConstructor) {
-  s21::stack<int> int_stack;
-  std::stack<int> int_stack_original;
-  ASSERT_EQ(int_stack.size(), int_stack_original.size());
-}
-
-TEST(StackTest, TestCopyConstructor) {
-  s21::stack<int> my_stack;
-  std::stack<int> original_stack;
-  for (int i = 0; i <= 5; i++) {
-    my_stack.push(i);
-    original_stack.push(i);
-  }
-  s21::stack<int> my_stack_copy(my_stack);
-  std::stack<int> original_stack_copy(original_stack);
-  while (!my_stack_copy.empty() && !original_stack_copy.empty()) {
-    ASSERT_EQ(my_stack_copy.top(), original_stack_copy.top());
-    my_stack_copy.pop();
-    original_stack_copy.pop();
-  }
-  ASSERT_EQ(my_stack_copy.empty(), original_stack_copy.empty());
-}
-
-TEST(StackTest, TestMoveConstructor) {
-  s21::stack<int> my_stack;
-  std::stack<int> original_stack;
-  for (int i = 0; i <= 5; i++) {
-    my_stack.push(i);
-    original_stack.push(i);
-  }
-  s21::stack<int> my_stack_copy(std::move(my_stack));
-  std::stack<int> original_stack_copy(std::move(original_stack));
-  while (!my_stack_copy.empty() && !original_stack_copy.empty()) {
-    ASSERT_EQ(my_stack_copy.top(), original_stack_copy.top());
-    my_stack_copy.pop();
-    original_stack_copy.pop();
-  }
-  ASSERT_EQ(my_stack_copy.empty(), original_stack_copy.empty());
-}
-
-TEST(StackTest, TestCopyOperator) {
-  s21::stack<int> my_stack;
-  std::stack<int> original_stack;
-  for (int i = 0; i <= 5; i++) {
-    my_stack.push(i);
-    original_stack.push(i);
-  }
-  s21::stack<int> my_stack_copy = my_stack;
-  std::stack<int> original_stack_copy = original_stack;
-  while (!my_stack_copy.empty() && !original_stack_copy.empty()) {
-    ASSERT_EQ(my_stack_copy.top(), original_stack_copy.top());
-    my_stack_copy.pop();
-    original_stack_copy.pop();
-  }
-  ASSERT_EQ(my_stack_copy.empty(), original_stack_copy.empty());
-}
-
-TEST(StackTest, TestMoveOperator) {
-  s21::stack<int> my_stack;
-  std::stack<int> original_stack;
-  for (int i = 0; i <= 5; i++) {
-    my_stack.push(i);
-    original_stack.push(i);
-  }
-  s21::stack<int> my_stack_copy = std::move(my_stack);
-  std::stack<int> original_stack_copy = std::move(original_stack);
-  while (!my_stack_copy.empty() && !original_stack_copy.empty()) {
-    ASSERT_EQ(my_stack_copy.top(), original_stack_copy.top());
-    my_stack_copy.pop();
-    original_stack_copy.pop();
-  }
-  ASSERT_EQ(my_stack_copy.empty(), original_stack_copy.empty());
-}
-
-TEST(StackTest, TestTop) {
-  s21::stack<int> my_stack;
-  std::stack<int> original_stack;
-  for (int i = 0; i <= 42; i += 4) {
-    my_stack.push(i);
-    original_stack.push(i);
-  }
-  ASSERT_EQ(my_stack.top(), original_stack.top());
-}
-
-TEST(StackTest, TestEmpty) {
-  s21::stack<int> int_stack;
-  std::stack<int> int_stack_original;
-  ASSERT_EQ(int_stack.empty(), int_stack_original.empty());
-  ASSERT_TRUE(int_stack.empty());
-  ASSERT_TRUE(int_stack_original.empty());
-}
-
-TEST(StackTest, TestSize) {
-  s21::stack<std::string> my_stack;
-  std::stack<std::string> original_stack;
-  for (int i = 0; i <= 5; i += 4) {
-    my_stack.push("string");
-    original_stack.push("string");
-  }
-  ASSERT_EQ(my_stack.size(), original_stack.size());
-}
-
-TEST(StackTest, TestSwap) {
-  s21::stack<int> int_stack;
-  std::stack<int> int_stack_original;
+class StackTest : public ::testing::Test {
+public:
   s21::stack<int> empty_stack;
   std::stack<int> empty_stack_original;
-  int_stack.push(324);
-  int_stack.push(768678);
-  int_stack.push(54342);
-  int_stack.push(6563);
-  int_stack_original.push(324);
-  int_stack_original.push(768678);
-  int_stack_original.push(54342);
-  int_stack_original.push(6563);
-  int_stack.swap(empty_stack);
-  int_stack_original.swap(empty_stack_original);
-  while (!int_stack.empty() && !int_stack_original.empty()) {
-    ASSERT_EQ(int_stack.top(), int_stack_original.top());
-    int_stack.pop();
-    int_stack_original.pop();
+  s21::stack<int> *int_stack;
+  std::stack<int> *int_stack_original;
+  s21::stack<int> *my_stack;
+  std::stack<int> *original_stack;
+  void SetUp() override {
+    int_stack = new s21::stack<int>;
+    int_stack_original = new std::stack<int>;
+    int_stack->push(324);
+    int_stack->push(768678);
+    int_stack->push(54342);
+    int_stack->push(6563);
+    int_stack_original->push(324);
+    int_stack_original->push(768678);
+    int_stack_original->push(54342);
+    int_stack_original->push(6563);
+    my_stack = new s21::stack<int>;
+    original_stack = new std::stack<int>;
+    for (int i = 0; i <= 5; i++) {
+      my_stack->push(i);
+      original_stack->push(i);
+    }
   }
-  ASSERT_EQ(int_stack.empty(), int_stack_original.empty());
+  void TearDown() override {
+    delete int_stack;
+    delete int_stack_original;
+    delete my_stack;
+    delete original_stack;
+  }
+};
+
+TEST_F(StackTest, TestDefaultConstructor) {
+  ASSERT_EQ(empty_stack.size(), empty_stack_original.size());
 }
 
-TEST(StackTest, TestEmplaceFront) {
-  s21::stack<int> int_stack;
-  std::stack<int> int_stack_original;
-  int_stack.push(324);
-  int_stack.push(768678);
-  int_stack.insert_many_front(481223);
-  int_stack_original.push(324);
-  int_stack_original.push(768678);
-  int_stack_original.emplace(481223);
-  while (!int_stack.empty() && !int_stack_original.empty()) {
-    ASSERT_EQ(int_stack.top(), int_stack_original.top());
-    int_stack.pop();
-    int_stack_original.pop();
+TEST_F(StackTest, TestCopyConstructor) {
+  s21::stack<int> my_stack_copy(*my_stack);
+  std::stack<int> original_stack_copy(*original_stack);
+  while (!my_stack_copy.empty() && !original_stack_copy.empty()) {
+    ASSERT_EQ(my_stack_copy.top(), original_stack_copy.top());
+    my_stack_copy.pop();
+    original_stack_copy.pop();
   }
-  ASSERT_EQ(int_stack.empty(), int_stack_original.empty());
+  ASSERT_EQ(my_stack_copy.empty(), original_stack_copy.empty());
+}
+
+TEST_F(StackTest, TestMoveConstructor) {
+  s21::stack<int> my_stack_copy(std::move(*my_stack));
+  std::stack<int> original_stack_copy(std::move(*original_stack));
+  while (!my_stack_copy.empty() && !original_stack_copy.empty()) {
+    ASSERT_EQ(my_stack_copy.top(), original_stack_copy.top());
+    my_stack_copy.pop();
+    original_stack_copy.pop();
+  }
+  ASSERT_EQ(my_stack_copy.empty(), original_stack_copy.empty());
+}
+
+TEST_F(StackTest, TestCopyOperator) {
+  s21::stack<int> my_stack_copy = *my_stack;
+  std::stack<int> original_stack_copy = *original_stack;
+  while (!my_stack_copy.empty() && !original_stack_copy.empty()) {
+    ASSERT_EQ(my_stack_copy.top(), original_stack_copy.top());
+    my_stack_copy.pop();
+    original_stack_copy.pop();
+  }
+  ASSERT_EQ(my_stack_copy.empty(), original_stack_copy.empty());
+}
+
+TEST_F(StackTest, TestMoveOperator) {
+  s21::stack<int> my_stack_copy = std::move(*my_stack);
+  std::stack<int> original_stack_copy = std::move(*original_stack);
+  while (!my_stack_copy.empty() && !original_stack_copy.empty()) {
+    ASSERT_EQ(my_stack_copy.top(), original_stack_copy.top());
+    my_stack_copy.pop();
+    original_stack_copy.pop();
+  }
+  ASSERT_EQ(my_stack_copy.empty(), original_stack_copy.empty());
+}
+
+TEST_F(StackTest, TestTop) {
+  ASSERT_EQ(my_stack->top(), original_stack->top());
+}
+
+TEST_F(StackTest, TestSize) {
+  ASSERT_EQ(my_stack->size(), original_stack->size());
+}
+
+TEST_F(StackTest, TestSwap) {
+  int_stack->swap(empty_stack);
+  int_stack_original->swap(empty_stack_original);
+  while (!int_stack->empty() && !int_stack_original->empty()) {
+    ASSERT_EQ(int_stack->top(), int_stack_original->top());
+    int_stack->pop();
+    int_stack_original->pop();
+  }
+  ASSERT_EQ(int_stack->empty(), int_stack_original->empty());
+}
+
+TEST_F(StackTest, TestEmplaceFront) {
+  int_stack->insert_many_front(481223);
+  int_stack_original->emplace(481223);
+  while (!int_stack->empty() && !int_stack_original->empty()) {
+    ASSERT_EQ(int_stack->top(), int_stack_original->top());
+    int_stack->pop();
+    int_stack_original->pop();
+  }
+  ASSERT_EQ(int_stack->empty(), int_stack_original->empty());
 }
 
 // Queue
 
-TEST(TestQueue, Constructor_Default) {
+class TestQueue : public ::testing::Test {
+public:
+  s21::queue<int> empty_queue;
+  std::queue<int> empty_queue_original;
+  std::deque<int> numbers = {1, 2, 3, 4, 5};
+  std::queue<int> std_queue{numbers};
+  s21::queue<int> s21_queue = {1, 2, 3, 4, 5};
   std::queue<int> queue_1;
   s21::queue<int> queue_2;
-  EXPECT_EQ(queue_1.empty(), queue_2.empty());
-  EXPECT_EQ(queue_1.size(), queue_2.size());
+  std::deque<std::string> str = {"I Love School"};
+  std::queue<std::string> queue_str1{str};
+  s21::queue<std::string> queue_str2 = {"I Love School"};
+  std::deque<std::string> string_deque = {"School S21", " in ", "Kazan"};
+  std::queue<std::string> std_queue_str{string_deque};
+  s21::queue<std::string> s21_queue_str = {"School S21", " in ", "Kazan"};
+  std::deque<std::string> string_deque_2 = {"I ", "from ", "Dagestan"};
+  std::queue<std::string> std_queue_2{string_deque_2};
+  s21::queue<std::string> s21_queue_str_2 = {"I ", "from ", "Dagestan"};
+};
+
+TEST_F(TestQueue, Constructor_Default) {
+  EXPECT_EQ(empty_queue.empty(), empty_queue_original.empty());
+  EXPECT_EQ(empty_queue.size(), empty_queue_original.size());
 }
 
-TEST(TestQueue, Constructor_Init) {
-  std::deque<int> numbers = {1, 2, 3};
-  std::queue<int> std_queue{numbers};
-  s21::queue<int> s21_queue = {1, 2, 3};
+TEST_F(TestQueue, Constructor_Init) {
   while (!s21_queue.empty()) {
     EXPECT_EQ(s21_queue.front(), std_queue.front());
     s21_queue.pop();
@@ -380,14 +365,11 @@ TEST(TestQueue, Constructor_Init) {
   }
 }
 
-TEST(TestQueue, Constructor_Copy) {
-  std::deque<int> numbers = {1, 2, 3};
-  std::queue<int> std_queue{numbers};
+TEST_F(TestQueue, Constructor_Copy) {
   std::queue<int> std_queue_2(std_queue);
   std::queue<int> std_queue_3;
   std_queue_3 = std_queue_2;
 
-  s21::queue<int> s21_queue{1, 2, 3};
   s21::queue<int> s21_queue_2(s21_queue);
   s21::queue<int> s21_queue_3;
   s21_queue_3 = s21_queue_2;
@@ -408,11 +390,8 @@ TEST(TestQueue, Constructor_Copy) {
   }
 }
 
-TEST(TestQueue, Constructor_Move) {
-  std::deque<int> numbers = {1, 2, 3};
-  std::queue<int> std_queue{numbers};
+TEST_F(TestQueue, Constructor_Move) {
   std::queue<int> std_queue_2(std::move(std_queue));
-  s21::queue<int> s21_queue{1, 2, 3};
   s21::queue<int> s21_queue_2(std::move(s21_queue));
   EXPECT_EQ(s21_queue.empty(), std_queue.empty());
   while (!s21_queue_2.empty()) {
@@ -435,9 +414,7 @@ TEST(TestQueue, Constructor_Move) {
   }
 }
 
-TEST(TestQueue, Test_Push) {
-  std::queue<int> queue_1;
-  s21::queue<int> queue_2;
+TEST_F(TestQueue, Test_Push) {
   for (int i = 0; i < 5; ++i) {
     queue_1.push(i);
     queue_2.push(i);
@@ -446,45 +423,33 @@ TEST(TestQueue, Test_Push) {
   }
 }
 
-TEST(TestQueue, Test_Push_2) {
-  std::deque<std::string> str = {"I Love School"};
-  std::queue<std::string> queue_1{str};
-  s21::queue<std::string> queue_2 = {"I Love School"};
-  queue_1.push(" S21");
-  queue_2.push(" S21");
-  EXPECT_EQ(queue_1.size(), queue_2.size());
+TEST_F(TestQueue, Test_Push_2) {
+  queue_str1.push(" S21");
+  queue_str2.push(" S21");
+  EXPECT_EQ(queue_str1.size(), queue_str2.size());
   while (!queue_2.empty()) {
-    EXPECT_EQ(queue_1.front(), queue_2.front());
-    queue_1.pop();
-    queue_2.pop();
+    EXPECT_EQ(queue_str1.front(), queue_str2.front());
+    queue_str1.pop();
+    queue_str2.pop();
   }
 }
 
-TEST(TestQueue, Test_Swap) {
-  std::deque<std::string> str = {"School S21", " in ", "Kazan"};
-  std::queue<std::string> std_queue{str};
-  s21::queue<std::string> s21_queue = {"School S21", " in ", "Kazan"};
-  std::deque<std::string> str_2 = {"I ", "from ", "Dagestan"};
-  std::queue<std::string> std_queue_2{str_2};
-  s21::queue<std::string> s21_queue_2 = {"I ", "from ", "Dagestan"};
-  std_queue.swap(std_queue_2);
-  s21_queue.swap(s21_queue_2);
-  while (!std_queue.empty()) {
-    EXPECT_EQ(s21_queue.front(), std_queue.front());
-    s21_queue.pop();
-    std_queue.pop();
+TEST_F(TestQueue, Test_Swap) {
+  std_queue_str.swap(std_queue_2);
+  s21_queue_str.swap(s21_queue_str_2);
+  while (!std_queue_str.empty()) {
+    EXPECT_EQ(s21_queue_str.front(), std_queue_str.front());
+    s21_queue_str.pop();
+    std_queue_str.pop();
   }
   while (!std_queue_2.empty()) {
-    EXPECT_EQ(s21_queue_2.front(), std_queue_2.front());
-    s21_queue_2.pop();
+    EXPECT_EQ(s21_queue_str_2.front(), std_queue_2.front());
+    s21_queue_str_2.pop();
     std_queue_2.pop();
   }
 }
 
-TEST(TestQueue, Test_InsertManyBack) {
-  std::deque<int> numbers = {1, 2, 3, 4, 5};
-  std::queue<int> std_queue{numbers};
-  s21::queue<int> s21_queue = {1, 2, 3, 4, 5};
+TEST_F(TestQueue, Test_InsertManyBack) {
   for (int i = 6; i < 8; ++i) {
     std_queue.push(i);
   }
@@ -498,77 +463,79 @@ TEST(TestQueue, Test_InsertManyBack) {
 
 // List
 
-TEST(TestList, Constructor_Default) {
-  std::list<int> list_1;
-  s21::list<int> list_2;
-  EXPECT_EQ(list_1.empty(), list_2.empty());
-  EXPECT_EQ(list_1.size(), list_2.size());
+class TestList : public ::testing::Test {
+public:
+  std::list<int> empty_list_std;
+  s21::list<int> empty_list_s21;
+  std::list<int> list_std{1, 2, 3};
+  std::list<int> list_std_2{5, 6, 7};
+  s21::list<int> list_s21{1, 2, 3};
+  s21::list<int> list_s21_2{5, 6, 7};
+  std::list<std::string> list_str_std = {"I Love School"};
+  s21::list<std::string> list_str_s21 = {"I Love School"};
+  std::list<char> list_char_std = {'D', 'A', 'G'};
+  s21::list<char> list_char_s21 = {'D', 'A', 'G'};
+};
+
+TEST_F(TestList, Constructor_Default) {
+  EXPECT_EQ(empty_list_std.empty(), empty_list_s21.empty());
+  EXPECT_EQ(empty_list_std.size(), empty_list_s21.size());
 }
 
-TEST(TestList, Constructor_Size) {
+TEST_F(TestList, Constructor_Size) {
   size_t count = 4;
   std::list<int> list_1(count);
   s21::list<int> list_2(count);
   EXPECT_EQ(list_1.size(), list_2.size());
 }
 
-TEST(TestList, Constructor_Init) {
-  std::list<int> list_1{1, 2, 3};
-  s21::list<int> list_2{1, 2, 3};
-  auto iter_2 = list_2.begin();
-  for (auto i = list_1.begin(); i != list_1.end(); ++i, ++iter_2) {
+TEST_F(TestList, Constructor_Init) {
+  auto iter_2 = list_s21.begin();
+  for (auto i = list_std.begin(); i != list_std.end(); ++i, ++iter_2) {
     EXPECT_EQ(*i, *iter_2);
   }
 }
 
-TEST(TestList, Constructor_Copy) {
-  std::list<int> listCopy_1{1, 2, 3};
-  std::list<int> list_1(listCopy_1);
-  std::list<int> list_11{5, 6, 7};
-  list_11 = list_1;
-
-  s21::list<int> listCopy_2{1, 2, 3};
-  s21::list<int> list_2(listCopy_2);
-  s21::list<int> list_22{5, 6, 7};
-  list_22 = list_2;
+TEST_F(TestList, Constructor_Copy) {
+  std::list<int> list_1(list_std);
+  list_std_2 = list_1;
+  s21::list<int> list_2(list_s21);
+  list_s21_2 = list_2;
 
   EXPECT_EQ(list_1.size(), list_2.size());
-  EXPECT_EQ(list_11.size(), list_22.size());
-  EXPECT_EQ(listCopy_1.size(), listCopy_2.size());
+  EXPECT_EQ(list_std_2.size(), list_s21_2.size());
+  EXPECT_EQ(list_std.size(), list_s21.size());
   auto it = list_2.begin();
-  auto it2 = list_11.begin();
+  auto it2 = list_std_2.begin();
   for (auto i = list_1.begin(); i != list_1.begin(); ++i, ++it) {
     EXPECT_EQ(*i, *it);
   }
-  for (auto i = list_11.begin(); i != list_11.begin(); ++i, ++it2) {
+  for (auto i = list_std_2.begin(); i != list_std_2.begin(); ++i, ++it2) {
     EXPECT_EQ(*i, *it2);
   }
 }
 
-TEST(TestList, Constructor_Move) {
-  std::list<int> listCopy_1{1, 2, 3};
-  std::list<int> list_1(std::move(listCopy_1));
-  s21::list<int> listCopy_2{1, 2, 3};
-  s21::list<int> list_2(std::move(listCopy_2));
+TEST_F(TestList, Constructor_Move) {
+  std::list<int> list_1(std::move(list_std));
+  s21::list<int> list_2(std::move(list_s21));
   EXPECT_EQ(list_1.size(), list_2.size());
-  EXPECT_EQ(listCopy_1.size(), listCopy_2.size());
+  EXPECT_EQ(list_std.size(), list_s21.size());
   auto it = list_2.begin();
   for (auto i = list_1.begin(); i != list_1.begin(); ++i, ++it) {
     EXPECT_EQ(*i, *it);
   }
-  std::list<int> list11{5, 6, 7};
-  list11 = std::move(list_1);
-  s21::list<int> list22{5, 6, 7};
-  list22 = std::move(list_2);
+  list_std_2 = std::move(list_1);
+  s21::list<int> list_s21_2{5, 6, 7};
+  list_s21_2 = std::move(list_2);
   EXPECT_EQ(list_1.size(), list_2.size());
-  EXPECT_EQ(list11.size(), list22.size());
-  auto it2 = list22.begin();
-  for (auto i = list11.begin(); i != list11.begin(); ++i, ++it) {
+  EXPECT_EQ(list_std_2.size(), list_s21_2.size());
+  auto it2 = list_s21_2.begin();
+  for (auto i = list_std_2.begin(); i != list_std_2.begin(); ++i, ++it) {
     EXPECT_EQ(*i, *it2);
   }
 }
 
-TEST(TestList, Test_PushFront) {
+TEST_F(TestList, Test_PushFront) {
   std::list<int> list1;
   s21::list<int> list2;
   auto it = list1.begin();
@@ -581,112 +548,96 @@ TEST(TestList, Test_PushFront) {
   }
 }
 
-TEST(TestList, Test_PushBack) {
-  std::list<std::string> list1 = {"I Love School"};
-  s21::list<std::string> list2 = {"I Love School"};
-  list1.push_back(" S21");
-  list2.push_back(" S21");
-  EXPECT_EQ(list1.size(), list2.size());
-  auto it = list1.begin();
-  for (auto i = list1.begin(); i != list1.end(); ++i, ++it) {
+TEST_F(TestList, Test_PushBack) {
+  list_str_std.push_back(" S21");
+  list_str_s21.push_back(" S21");
+  EXPECT_EQ(list_str_std.size(), list_str_s21.size());
+  auto it = list_str_std.begin();
+  for (auto i = list_str_std.begin(); i != list_str_std.end(); ++i, ++it) {
     EXPECT_EQ(*it, *i);
   }
 }
 
-TEST(TestList, Test_PopFront) {
-  std::list<int> list1 = {1, 2, 3, 4, 5};
-  s21::list<int> list2 = {1, 2, 3, 4, 5};
-  auto it = list1.begin();
-  auto it2 = list2.begin();
-  EXPECT_EQ(list1.size(), list2.size());
+TEST_F(TestList, Test_PopFront) {
+  auto it = list_std.begin();
+  auto it2 = list_s21.begin();
+  EXPECT_EQ(list_std.size(), list_s21.size());
   EXPECT_EQ(*it, *it2);
-  list1.pop_front();
-  list2.pop_front();
-  it = list1.begin();
-  it2 = list2.begin();
-  EXPECT_EQ(list1.size(), list2.size());
+  list_std.pop_front();
+  list_s21.pop_front();
+  it = list_std.begin();
+  it2 = list_s21.begin();
+  EXPECT_EQ(list_std.size(), list_s21.size());
   EXPECT_EQ(*it, *it2);
 }
 
-TEST(TestList, Test_PopBack) {
-  std::list<int> list1 = {1, 2, 3, 4, 5};
-  s21::list<int> list2 = {1, 2, 3, 4, 5};
-  auto it = list1.end();
-  auto it2 = list2.end();
-  EXPECT_EQ(list1.size(), list2.size());
+TEST_F(TestList, Test_PopBack) {
+  auto it = list_std.end();
+  auto it2 = list_s21.end();
+  EXPECT_EQ(list_std.size(), list_s21.size());
   EXPECT_EQ(*(++it), *(++it2));
-  list1.pop_back();
-  list2.pop_back();
-  EXPECT_EQ(list1.size(), list2.size());
+  list_std.pop_back();
+  list_s21.pop_back();
+  EXPECT_EQ(list_std.size(), list_s21.size());
   EXPECT_EQ(*(++it), *(++it2));
 }
 
-TEST(TestList, Test_FrontBack) {
-  std::list<char> list1 = {'D', 'A', 'G'};
-  s21::list<char> list2 = {'D', 'A', 'G'};
-  EXPECT_EQ(list1.front(), list2.front());
-  EXPECT_EQ(list1.back(), list2.back());
+TEST_F(TestList, Test_FrontBack) {
+  EXPECT_EQ(list_char_std.front(), list_char_s21.front());
+  EXPECT_EQ(list_char_std.back(), list_char_s21.back());
 }
 
-TEST(TestList, Test_Insert) {
-  std::list<std::string> list1 = {"I love ", " s21"};
-  s21::list<std::string> list2 = {"I love ", " s21"};
-  auto it = --list1.end();
-  auto it2 = --list2.end();
-  list1.insert(it, "School");
-  list2.insert(it2, "School");
-  it = list1.begin();
-  for (auto i = list1.begin(); i != list1.end(); ++i, ++it) {
+TEST_F(TestList, Test_Insert) {
+  auto it = --list_str_std.end();
+  auto it2 = --list_str_s21.end();
+  list_str_std.insert(it, "School");
+  list_str_s21.insert(it2, "School");
+  it = list_str_std.begin();
+  for (auto i = list_str_std.begin(); i != list_str_std.end(); ++i, ++it) {
     EXPECT_EQ(*it, *i);
   }
-  EXPECT_EQ(list1.size(), list2.size());
+  EXPECT_EQ(list_str_std.size(), list_str_s21.size());
 }
 
-TEST(TestList, Test_Clear) {
-  std::list<int> list1 = {1, 2, 3};
-  s21::list<int> list2 = {1, 2, 3};
-  list1.clear();
-  list2.clear();
-  auto it = list1.end();
-  auto it2 = list2.end();
+TEST_F(TestList, Test_Clear) {
+  list_std.clear();
+  list_s21.clear();
+  auto it = list_std.end();
+  auto it2 = list_s21.end();
   EXPECT_EQ(*it, *it2);
-  EXPECT_EQ(list1.size(), list2.size());
+  EXPECT_EQ(list_std.size(), list_s21.size());
 }
 
-TEST(TestList, Test_Erase) {
-  std::list<int> list1 = {1, 2, 3};
-  s21::list<int> list2 = {1, 2, 3};
-  auto it = ++list1.begin();
-  auto it2 = ++list2.begin();
-  list1.erase(it);
-  list2.erase(it2);
-  EXPECT_EQ(list1.size(), list2.size());
-  it2 = list2.begin();
-  for (auto i = list1.begin(); i != list1.end(); ++i, ++it2) {
+TEST_F(TestList, Test_Erase) {
+  auto it = ++list_std_2.begin();
+  auto it2 = ++list_s21_2.begin();
+  list_std_2.erase(it);
+  list_s21_2.erase(it2);
+  EXPECT_EQ(list_std_2.size(), list_s21_2.size());
+  it2 = list_s21_2.begin();
+  for (auto i = list_std_2.begin(); i != list_std_2.end(); ++i, ++it2) {
     EXPECT_EQ(*it2, *i);
   }
 }
 
-TEST(TestList, Test_Swap) {
+TEST_F(TestList, Test_Swap) {
   std::list<char> list1;
-  std::list<char> list11 = {'x', 'y'};
   s21::list<char> list2;
-  s21::list<char> list22 = {'x', 'y'};
-  list1.swap(list11);
-  list2.swap(list22);
+  list1.swap(list_char_std);
+  list2.swap(list_char_s21);
   auto it1 = list1.begin();
   auto it2 = list2.begin();
-  auto it22 = list22.begin();
+  auto it22 = list_char_s21.begin();
   EXPECT_EQ(list1.size(), list2.size());
-  EXPECT_EQ(list11.size(), list22.size());
-  for (auto it11 = list11.begin(); it11 != list11.end();
+  EXPECT_EQ(list_char_std.size(), list_char_s21.size());
+  for (auto it11 = list_char_std.begin(); it11 != list_char_std.end();
        ++it11, ++it1, ++it2, ++it22) {
     EXPECT_EQ(*it1, *it2);
     EXPECT_EQ(*it11, *it22);
   }
 }
 
-TEST(TestList, Test_Merge) {
+TEST_F(TestList, Test_Merge) {
   std::list<int> list1 = {4, 5, 6};
   std::list<int> list11 = {5, 0, 2};
 
@@ -704,7 +655,7 @@ TEST(TestList, Test_Merge) {
   }
 }
 
-TEST(TestList, Test_Splice) {
+TEST_F(TestList, Test_Splice) {
   std::list<std::string> list1 = {"I study ", " in Kazan"};
   std::list<std::string> list11 = {" at school ", "s21"};
 
@@ -726,7 +677,7 @@ TEST(TestList, Test_Splice) {
   }
 }
 
-TEST(TestList, Test_Reverse) {
+TEST_F(TestList, Test_Reverse) {
   std::list<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
   s21::list<int> list2 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -738,7 +689,7 @@ TEST(TestList, Test_Reverse) {
   }
 }
 
-TEST(TestList, Test_Unique) {
+TEST_F(TestList, Test_Unique) {
   std::list<char> list1 = {'a', 'b', 'b', 'a', 'c', 'x',
                            'y', 'y', 'y', 'z', 'z'};
   s21::list<char> list2 = {'a', 'b', 'b', 'a', 'c', 'x',
@@ -752,7 +703,7 @@ TEST(TestList, Test_Unique) {
   }
 }
 
-TEST(TestList, Test_Sort) {
+TEST_F(TestList, Test_Sort) {
   std::list<char> list1 = {'y', 'c', 'z', 'a', 'a', 'x',
                            'w', 'v', 't', 'e', 'q'};
   s21::list<char> list2 = {'y', 'c', 'z', 'a', 'a', 'x',
@@ -765,7 +716,7 @@ TEST(TestList, Test_Sort) {
     EXPECT_EQ(*it1, *it2);
   }
 }
-TEST(TestList, Test_InsertMany) {
+TEST_F(TestList, Test_InsertMany) {
   std::list<int> std_lst{1, 2, 3, 4, 5};
   auto std_it = std_lst.begin();
   ++std_it;
@@ -806,19 +757,29 @@ TEST(TestList, Test_InsertMany) {
 
 // Set
 
-TEST(SetTest, TestDefaultConstructor) {
+class SetTest : public ::testing::Test {
+public:
   s21::set<int> empty_set;
-  EXPECT_TRUE(empty_set.empty());
-}
-
-TEST(SetTest, TestInitializerList) {
+  std::set<int> empty_set_std;
   s21::set<int> int_set = {4, 8, 15, 16, 23, 42};
   std::set<int> int_set_std = {4, 8, 15, 16, 23, 42};
+  s21::set<char> char_set = {'a', 'b', 'c'};
+  std::set<char> char_set_std = {'a', 'b', 'c'};
+  s21::set<std::string> string_set = {"one", "two", "three"};
+  std::set<std::string> string_set_std = {"one", "two", "three"};
+  s21::set<int> first = {4, 8, 15, 16, 23, 42};
+  std::set<int> first_std = {4, 8, 15, 16, 23, 42};
+  s21::set<int> second = {1, 2, 3, 4};
+  std::set<int> second_std = {1, 2, 3, 4};
+};
+
+TEST_F(SetTest, TestDefaultConstructor) { EXPECT_TRUE(empty_set.empty()); }
+
+TEST_F(SetTest, TestInitializerList) {
   EXPECT_EQ(int_set.size(), int_set_std.size());
 }
 
-TEST(SetTest, TestCopyConstructor) {
-  s21::set<int> int_set = {4, 8, 15, 16, 23, 42};
+TEST_F(SetTest, TestCopyConstructor) {
   s21::set<int> copy_set(int_set);
   auto i = int_set.begin();
   auto j = copy_set.begin();
@@ -829,17 +790,14 @@ TEST(SetTest, TestCopyConstructor) {
   }
 }
 
-TEST(SetTest, TestMoveConstructor) {
-  s21::set<char> char_set = {'a', 'b', 'c'};
+TEST_F(SetTest, TestMoveConstructor) {
   s21::set<char> copy_set(std::move(char_set));
-  std::set<char> char_set_std = {'a', 'b', 'c'};
   std::set<char> copy_set_std(std::move(char_set_std));
   EXPECT_EQ(char_set.empty(), char_set_std.empty());
   EXPECT_EQ(copy_set.size(), copy_set_std.size());
 }
 
-TEST(SetTest, TestCopyOperator) {
-  s21::set<int> int_set = {4, 8, 15, 16, 23, 42};
+TEST_F(SetTest, TestCopyOperator) {
   s21::set<int> copy_set = int_set;
   auto i = int_set.begin();
   auto j = copy_set.begin();
@@ -850,44 +808,31 @@ TEST(SetTest, TestCopyOperator) {
   }
 }
 
-TEST(SetTest, TestMoveOperator) {
-  s21::set<char> char_set = {'a', 'b', 'c'};
+TEST_F(SetTest, TestMoveOperator) {
   s21::set<char> copy_set = std::move(char_set);
-  std::set<char> char_set_std = {'a', 'b', 'c'};
   std::set<char> copy_set_std = std::move(char_set_std);
   EXPECT_EQ(char_set.empty(), char_set_std.empty());
   EXPECT_EQ(copy_set.size(), copy_set_std.size());
 }
 
-TEST(SetTest, TestEmpty) {
-  s21::set<int> empty_set;
-  EXPECT_TRUE(empty_set.empty());
-}
+TEST_F(SetTest, TestEmpty) { EXPECT_TRUE(empty_set.empty()); }
 
-TEST(SetTest, TestSize) {
-  s21::set<std::string> string_set = {"one", "two", "three"};
-  std::set<std::string> string_set_std = {"one", "two", "three"};
+TEST_F(SetTest, TestSize) {
   EXPECT_EQ(string_set.size(), string_set_std.size());
 }
 
-TEST(SetTest, TestMaxSize) {
-  s21::set<int> string_set = {1, 2, 3};
-  std::set<int> string_set_std = {1, 2, 3};
-  EXPECT_EQ(string_set.max_size(), string_set_std.max_size());
+TEST_F(SetTest, TestMaxSize) {
+  EXPECT_EQ(int_set.max_size(), int_set_std.max_size());
 }
 
-TEST(SetTest, TestClear) {
-  s21::set<std::string> string_set = {"one", "two", "three"};
-  std::set<std::string> string_set_std = {"one", "two", "three"};
+TEST_F(SetTest, TestClear) {
   string_set.clear();
   string_set_std.clear();
   EXPECT_EQ(string_set.empty(), string_set_std.empty());
   EXPECT_EQ(string_set.size(), string_set_std.size());
 }
 
-TEST(SetTest, TestInsert) {
-  s21::set<int> int_set = {4, 8, 15, 16, 23, 42};
-  std::set<int> int_set_std = {4, 8, 15, 16, 23, 42};
+TEST_F(SetTest, TestInsert) {
   int_set.insert(36);
   int_set_std.insert(36);
   auto i = int_set.begin();
@@ -899,9 +844,7 @@ TEST(SetTest, TestInsert) {
   }
 }
 
-TEST(SetTest, TestErase) {
-  s21::set<int> int_set = {4, 8, 15, 16, 23, 42};
-  std::set<int> int_set_std = {4, 8, 15, 16, 23, 42};
+TEST_F(SetTest, TestErase) {
   int_set.erase(int_set.begin());
   int_set_std.erase(int_set_std.begin());
   auto i = int_set.begin();
@@ -914,11 +857,7 @@ TEST(SetTest, TestErase) {
   EXPECT_EQ(int_set.size(), int_set_std.size());
 }
 
-TEST(SetTest, TestSwap) {
-  s21::set<int> int_set = {4, 8, 15, 16, 23, 42};
-  std::set<int> int_set_std = {4, 8, 15, 16, 23, 42};
-  s21::set<int> empty_set;
-  std::set<int> empty_set_std;
+TEST_F(SetTest, TestSwap) {
   int_set.swap(empty_set);
   int_set_std.swap(empty_set_std);
   auto i = empty_set.begin();
@@ -933,11 +872,7 @@ TEST(SetTest, TestSwap) {
   EXPECT_TRUE(int_set.empty());
 }
 
-TEST(SetTest, TestMerge) {
-  s21::set<int> first = {4, 8, 15, 16, 23, 42};
-  std::set<int> first_std = {4, 8, 15, 16, 23, 42};
-  s21::set<int> second = {1, 2, 3, 4};
-  std::set<int> second_std = {1, 2, 3, 4};
+TEST_F(SetTest, TestMerge) {
   first.merge(second);
   first_std.merge(second_std);
   auto i = first.begin();
@@ -950,36 +885,44 @@ TEST(SetTest, TestMerge) {
   EXPECT_EQ(first.size(), first_std.size());
 }
 
-TEST(SetTest, TestFind) {
-  s21::set<int> int_set = {1, 2, 3, 4, 5};
-  std::set<int> int_set_std = {1, 2, 3, 4, 5};
-  for (int i = 1; i <= 5; i++) {
-    EXPECT_EQ(*(int_set.find(i)), *(int_set_std.find(i)));
+TEST_F(SetTest, TestFind) {
+  for (int i = 1; i < 5; i++) {
+    EXPECT_EQ(*(second.find(i)), *(second_std.find(i)));
   }
 }
 
-TEST(SetTest, TestContains) {
-  s21::set<int> int_set = {1, 2, 3, 4, 5};
-  for (int i = 1; i <= 5; i++) {
-    EXPECT_TRUE(int_set.contains(i));
+TEST_F(SetTest, TestContains) {
+  for (int i = 1; i < 5; i++) {
+    EXPECT_TRUE(second.contains(i));
   }
 }
 
 // Multiset
 
-TEST(MultisetTest, TestDefaultConstructor) {
+class MultisetTest : public ::testing::Test {
+public:
   s21::multiset<int> empty_set;
-  EXPECT_TRUE(empty_set.empty());
-}
-
-TEST(MultisetTest, TestInitializerList) {
+  std::multiset<int> empty_set_std;
   s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
   std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+  s21::multiset<char> char_set = {'a', 'b', 'c'};
+  s21::multiset<std::string> string_set = {"one", "two", "three"};
+  std::multiset<std::string> string_set_std = {"one", "two", "three"};
+  s21::multiset<int> first = {4, 8, 15, 16, 23, 42};
+  std::multiset<int> first_std = {4, 8, 15, 16, 23, 42};
+  s21::multiset<int> second = {1, 2, 3, 4, 8};
+  std::multiset<int> second_std = {1, 2, 3, 4, 8};
+  s21::multiset<int> int_set2 = {1, 2, 2, 3, 4, 5, 5, 5, 5};
+  std::multiset<int> int_set2_std = {1, 2, 2, 3, 4, 5, 5, 5, 5};
+};
+
+TEST_F(MultisetTest, TestDefaultConstructor) { EXPECT_TRUE(empty_set.empty()); }
+
+TEST_F(MultisetTest, TestInitializerList) {
   EXPECT_EQ(int_set.size(), int_set_std.size());
 }
 
-TEST(MultisetTest, TestCopyConstructor) {
-  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+TEST_F(MultisetTest, TestCopyConstructor) {
   s21::multiset<int> copy_set(int_set);
   auto i = int_set.begin();
   auto j = copy_set.begin();
@@ -990,15 +933,13 @@ TEST(MultisetTest, TestCopyConstructor) {
   }
 }
 
-TEST(MultisetTest, TestMoveConstructor) {
-  s21::multiset<char> char_set = {'a', 'b', 'c'};
+TEST_F(MultisetTest, TestMoveConstructor) {
   s21::multiset<char> copy_set(std::move(char_set));
   EXPECT_TRUE(char_set.empty());
   EXPECT_EQ(copy_set.size(), 3);
 }
 
-TEST(MultisetTest, TestCopyOperator) {
-  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
+TEST_F(MultisetTest, TestCopyOperator) {
   s21::multiset<int> copy_set = int_set;
   auto i = int_set.begin();
   auto j = copy_set.begin();
@@ -1009,42 +950,30 @@ TEST(MultisetTest, TestCopyOperator) {
   }
 }
 
-TEST(MultisetTest, TestMoveOperator) {
-  s21::multiset<char> char_set = {'a', 'b', 'c'};
+TEST_F(MultisetTest, TestMoveOperator) {
   s21::multiset<char> copy_set = std::move(char_set);
   EXPECT_TRUE(char_set.empty());
   EXPECT_EQ(copy_set.size(), 3);
 }
 
-TEST(MultisetTest, TestEmpty) {
-  s21::multiset<int> empty_set;
-  EXPECT_TRUE(empty_set.empty());
-}
+TEST_F(MultisetTest, TestEmpty) { EXPECT_TRUE(empty_set.empty()); }
 
-TEST(MultisetTest, TestSize) {
-  s21::multiset<std::string> string_set = {"one", "two", "three"};
-  std::multiset<std::string> string_set_std = {"one", "two", "three"};
+TEST_F(MultisetTest, TestSize) {
   EXPECT_EQ(string_set.size(), string_set_std.size());
 }
 
-TEST(MultisetTest, TestMaxSize) {
-  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
-  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+TEST_F(MultisetTest, TestMaxSize) {
   EXPECT_EQ(int_set.max_size(), int_set_std.max_size());
 }
 
-TEST(MultisetTest, TestClear) {
-  s21::multiset<std::string> string_set = {"one", "two", "three"};
-  std::multiset<std::string> string_set_std = {"one", "two", "three"};
+TEST_F(MultisetTest, TestClear) {
   string_set.clear();
   string_set_std.clear();
   EXPECT_EQ(string_set.empty(), string_set_std.empty());
   EXPECT_EQ(string_set.size(), string_set_std.size());
 }
 
-TEST(MultisetTest, TestInsert) {
-  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
-  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+TEST_F(MultisetTest, TestInsert) {
   int_set.insert(16);
   int_set_std.insert(16);
   auto i = int_set.begin();
@@ -1056,9 +985,7 @@ TEST(MultisetTest, TestInsert) {
   }
 }
 
-TEST(MultisetTest, TestErase) {
-  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
-  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
+TEST_F(MultisetTest, TestErase) {
   int_set.erase(int_set.begin());
   int_set_std.erase(int_set_std.begin());
   auto i = int_set.begin();
@@ -1071,11 +998,7 @@ TEST(MultisetTest, TestErase) {
   EXPECT_EQ(int_set.size(), int_set_std.size());
 }
 
-TEST(MultisetTest, TestSwap) {
-  s21::multiset<int> int_set = {4, 8, 15, 16, 23, 42};
-  std::multiset<int> int_set_std = {4, 8, 15, 16, 23, 42};
-  s21::multiset<int> empty_set;
-  std::multiset<int> empty_set_std;
+TEST_F(MultisetTest, TestSwap) {
   int_set.swap(empty_set);
   int_set_std.swap(empty_set_std);
   auto i = empty_set.begin();
@@ -1090,11 +1013,7 @@ TEST(MultisetTest, TestSwap) {
   EXPECT_TRUE(int_set.empty());
 }
 
-TEST(MultisetTest, TestMerge) {
-  s21::multiset<int> first = {4, 8, 15, 16, 23, 42};
-  std::multiset<int> first_std = {4, 8, 15, 16, 23, 42};
-  s21::multiset<int> second = {1, 2, 3, 4, 8};
-  std::multiset<int> second_std = {1, 2, 3, 4, 8};
+TEST_F(MultisetTest, TestMerge) {
   first.merge(second);
   first_std.merge(second_std);
   auto i = first.begin();
@@ -1107,53 +1026,42 @@ TEST(MultisetTest, TestMerge) {
   EXPECT_EQ(first.size(), first_std.size());
 }
 
-TEST(MultisetTest, TestCount) {
-  s21::multiset<int> int_set = {1, 2, 2, 3, 4, 5, 5, 5, 5};
-  std::multiset<int> int_set_std = {1, 2, 2, 3, 4, 5, 5, 5, 5};
+TEST_F(MultisetTest, TestCount) {
   for (int i = 1; i <= 5; i++) {
-    EXPECT_EQ(int_set.count(i), int_set_std.count(i));
+    EXPECT_EQ(int_set2.count(i), int_set2_std.count(i));
   }
 }
 
-TEST(MultisetTest, TestFind) {
-  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
-  std::multiset<int> int_set_std = {1, 2, 3, 4, 5};
-  for (int i = 1; i <= 5; i++) {
-    EXPECT_EQ(*(int_set.find(i)), *(int_set_std.find(i)));
+TEST_F(MultisetTest, TestFind) {
+  for (int i = 1; i < 5; i++) {
+    EXPECT_EQ(*(second.find(i)), *(second_std.find(i)));
   }
 }
 
-TEST(MultisetTest, TestContains) {
-  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
-  for (int i = 1; i <= 5; i++) {
-    EXPECT_TRUE(int_set.contains(i));
+TEST_F(MultisetTest, TestContains) {
+  for (int i = 1; i < 5; i++) {
+    EXPECT_TRUE(second.contains(i));
   }
 }
 
-TEST(MultisetTest, TestEqualRange) {
-  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
-  std::multiset<int> int_set_std = {1, 2, 3, 4, 5};
-  for (int i = 1; i <= 5; i++) {
-    EXPECT_EQ(*(int_set.equal_range(i).first),
-              *(int_set_std.equal_range(i).first));
-    EXPECT_EQ(*(int_set.equal_range(i).second),
-              *(int_set_std.equal_range(i).second));
+TEST_F(MultisetTest, TestEqualRange) {
+  for (int i = 1; i < 5; i++) {
+    EXPECT_EQ(*(second.equal_range(i).first),
+              *(second_std.equal_range(i).first));
+    EXPECT_EQ(*(second.equal_range(i).second),
+              *(second_std.equal_range(i).second));
   }
 }
 
-TEST(MultisetTest, TestLowerBound) {
-  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
-  std::multiset<int> int_set_std = {1, 2, 3, 4, 5};
-  for (int i = 1; i <= 5; i++) {
-    EXPECT_EQ(*(int_set.lower_bound(i)), *(int_set_std.lower_bound(i)));
+TEST_F(MultisetTest, TestLowerBound) {
+  for (int i = 1; i < 5; i++) {
+    EXPECT_EQ(*(second.lower_bound(i)), *(second_std.lower_bound(i)));
   }
 }
 
-TEST(MultisetTest, TestUpperBound) {
-  s21::multiset<int> int_set = {1, 2, 3, 4, 5};
-  std::multiset<int> int_set_std = {1, 2, 3, 4, 5};
+TEST_F(MultisetTest, TestUpperBound) {
   for (int i = 1; i <= 5; i++) {
-    EXPECT_EQ(*(int_set.upper_bound(i)), *(int_set_std.upper_bound(i)));
+    EXPECT_EQ(*(second.upper_bound(i)), *(second_std.upper_bound(i)));
   }
 }
 

@@ -1,7 +1,7 @@
 #ifndef SRC_STACK_STACK_H_
 #define SRC_STACK_STACK_H_
 
-#include "../List/List.h"
+#include "../List/list.h"
 
 namespace s21 {
 template <class T, class Container = s21::list<T>> class stack {
@@ -25,10 +25,10 @@ public:
   };
   ~stack(){};
 
-  const_reference top() { return baseClass.front(); };
+  const_reference top() const { return baseClass.front(); };
 
-  bool empty() { return baseClass.empty(); };
-  size_type size() { return baseClass.size(); };
+  bool empty() const { return baseClass.empty(); };
+  size_type size() const { return baseClass.size(); };
 
   void push(const_reference value) { baseClass.push_front(value); };
   void pop() { baseClass.pop_front(); };

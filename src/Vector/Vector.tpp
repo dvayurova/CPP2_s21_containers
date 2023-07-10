@@ -42,7 +42,8 @@ template <class T> vector<T> &vector<T>::operator=(const vector &v) {
   return *this;
 }
 
-template <class T> typename vector<T>::reference vector<T>::at(size_type pos) {
+template <class T>
+typename vector<T>::reference vector<T>::at(size_type pos) const {
   if (pos >= size_) {
     throw std::out_of_range("range check pos >= size_");
   }
@@ -50,20 +51,7 @@ template <class T> typename vector<T>::reference vector<T>::at(size_type pos) {
 }
 
 template <class T>
-typename vector<T>::const_reference vector<T>::at(size_type pos) const {
-  if (pos >= size_) {
-    throw std::out_of_range("range check pos >= size_");
-  }
-  return vector_[pos];
-}
-
-template <class T>
-typename vector<T>::reference vector<T>::operator[](size_type pos) {
-  return vector_[pos];
-}
-
-template <class T>
-typename vector<T>::const_reference vector<T>::operator[](size_type pos) const {
+typename vector<T>::reference vector<T>::operator[](size_type pos) const {
   return vector_[pos];
 }
 
@@ -80,17 +68,11 @@ template <class T> typename vector<T>::iterator vector<T>::data() {
   return vector_;
 }
 
-template <class T> typename vector<T>::iterator vector<T>::begin() {
-  return vector_;
-}
-template <class T> typename vector<T>::const_iterator vector<T>::begin() const {
+template <class T> typename vector<T>::iterator vector<T>::begin() const {
   return vector_;
 }
 
-template <class T> typename vector<T>::iterator vector<T>::end() {
-  return vector_ + size_;
-}
-template <class T> typename vector<T>::const_iterator vector<T>::end() const {
+template <class T> typename vector<T>::iterator vector<T>::end() const {
   return vector_ + size_;
 }
 
