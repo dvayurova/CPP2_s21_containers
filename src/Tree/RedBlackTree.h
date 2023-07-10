@@ -7,6 +7,7 @@
 #include <vector>
 
 namespace s21 {
+template <class Key, class Value> class map;
 template <class Key, class Value = Key, class Compare = std::less<Key>>
 class RedBlackTree {
   enum Color { BLACK, RED };
@@ -18,7 +19,7 @@ public:
   using key_type = Key;
   using value_type = Value;
   using referance = value_type &;
-  using const_referance = const value_type &;
+  using const_reference = const value_type &;
   using iterator = Iterator;
   using const_iterator = ConstIterator;
   using size_type = std::size_t;
@@ -27,24 +28,26 @@ public:
   struct Node {
   public:
     Node() = default;
-    explicit Node(value_type value)
+    explicit Node(Value value)
         : key_(value), value_(value), color_(RED), left_(nil_.get()),
           right_(nil_.get()), parent_(nil_.get()){};
-    explicit Node(key_type key, value_type value, Color color, Node *parent)
+    Node(Key key, Value value)
+        : key_(key), value_(value), color_(RED), left_(nil_.get()),
+          right_(nil_.get()), parent_(nil_.get()){};
+    Node(Key key, Value value, Color color, Node *parent)
         : key_(key), value_(value), color_(color), left_(nil_.get()),
           right_(nil_.get()), parent_(parent){};
 
-  private:
-    Node(key_type key, value_type value)
-        : key_(key), value_(value), color_(RED), left_(nil_.get()),
-          right_(nil_.get()), parent_(nil_.get()){}; // D
-    key_type key_;
-    value_type value_;
+  protected:
+    Key key_;
+    Value value_;
     Color color_ = BLACK;
     Node *left_ = nullptr;
     Node *right_ = nullptr;
     Node *parent_ = nullptr;
+
     friend class RedBlackTree<Key, Value, Compare>;
+    friend class map<Key, Value>;
   };
 
   struct ConstIterator {
@@ -54,11 +57,11 @@ public:
         : node_(node), past_node_(node->parent_){};
     bool operator!=(const const_iterator &other);
     bool operator==(const const_iterator &other);
-    const_iterator &operator++();
-    const_iterator operator++(int);
-    const_iterator &operator--();
-    const_iterator operator--(int);
-    const Key &operator*();
+    ConstIterator &operator++();
+    ConstIterator operator++(int);
+    ConstIterator &operator--();
+    ConstIterator operator--(int);
+    const Value &operator*();
     Node *get_node() const;
 
   private:
@@ -68,6 +71,8 @@ public:
   protected:
     Node *node_ = nil_.get();
     Node *past_node_ = nil_.get();
+
+    friend class map<Key, Value>;
   };
 
   struct Iterator : ConstIterator {
@@ -92,7 +97,7 @@ public:
   size_type max_size() const;
 
   void clear();
-  std::pair<iterator, bool> insert(const_referance value);
+  std::pair<iterator, bool> insert(const_reference value);
   void erase(iterator pos);
   void swap(RedBlackTree &other);
   void merge(RedBlackTree &other);
@@ -109,22 +114,20 @@ public:
 
 private:
   Node *copyTree(Node *node, Node *new_parent = nil_.get());
-  void balanceAfterInsert(Node *node);
   void balanceAfterErase(Node *node);
   void balanceAfterEraseLeft(Node *&node);
   void balanceAfterEraseRight(Node *&node);
   void rightRotate(Node *node);
   void leftRotate(Node *node);
-  static Node *minValue(Node *node);
-  static Node *maxValue(Node *node);
   void makeClearTree(Node *node);
 
 protected:
   static std::unique_ptr<Node> nil_;
   Node *root_;
   Compare compare_ = Compare();
-  std::pair<iterator, bool> insert(const Key &key,
-                                   const Value &value); // D
+  void balanceAfterInsert(Node *node);
+  static Node *minValue(Node *node);
+  static Node *maxValue(Node *node);
 };
 } // namespace s21
 

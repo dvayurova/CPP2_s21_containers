@@ -84,7 +84,8 @@ RedBlackTree<Key, Value, Compare>::ConstIterator::operator--(int) {
 }
 
 template <class Key, class Value, class Compare>
-const Key &RedBlackTree<Key, Value, Compare>::ConstIterator::operator*() {
+typename RedBlackTree<Key, Value, Compare>::const_reference
+RedBlackTree<Key, Value, Compare>::ConstIterator::operator*() {
   return get_node()->value_;
 }
 
@@ -243,14 +244,14 @@ void RedBlackTree<Key, Value, Compare>::makeClearTree(Node *node) {
 
 template <class Key, class Value, class Compare>
 std::pair<typename RedBlackTree<Key, Value, Compare>::Iterator, bool>
-RedBlackTree<Key, Value, Compare>::insert(const Value &value) {
+RedBlackTree<Key, Value, Compare>::insert(const value_type &value) {
   Node *current_node = root_;
   Node *parent = nil_.get();
   while (current_node != nil_.get()) {
     parent = current_node;
-    if (compare_(parent->value_, value))
+    if (compare_(parent->key_, value))
       current_node = current_node->right_;
-    else if (compare_(value, parent->value_))
+    else if (compare_(value, parent->key_))
       current_node = current_node->left_;
     else
       return std::pair<Iterator, bool>(find(parent->key_), false);
@@ -259,34 +260,7 @@ RedBlackTree<Key, Value, Compare>::insert(const Value &value) {
   new_node->parent_ = parent;
   if (parent == nil_.get())
     root_ = new_node;
-  else if (compare_(parent->value_, value))
-    parent->right_ = new_node;
-  else
-    parent->left_ = new_node;
-  balanceAfterInsert(new_node);
-  return std::pair<Iterator, bool>(find(new_node->key_), true);
-}
-
-template <class Key, class Value, class Compare>
-std::pair<typename RedBlackTree<Key, Value, Compare>::Iterator, bool>
-RedBlackTree<Key, Value, Compare>::insert(const Key &key,
-                                          const Value &value) { // D
-  Node *current_node = root_;
-  Node *parent = nil_.get();
-  while (current_node != nil_.get()) {
-    parent = current_node;
-    if (compare_(parent->key_, key))
-      current_node = current_node->right_;
-    else if (compare_(key, parent->key_))
-      current_node = current_node->left_;
-    else
-      return std::pair<Iterator, bool>(find(parent->key_), false);
-  }
-  Node *new_node = new Node(key, value);
-  new_node->parent_ = parent;
-  if (parent == nil_.get())
-    root_ = new_node;
-  else if (compare_(parent->key_, key))
+  else if (compare_(parent->key_, value))
     parent->right_ = new_node;
   else
     parent->left_ = new_node;
@@ -493,7 +467,7 @@ void RedBlackTree<Key, Value, Compare>::merge(RedBlackTree &other) {
 }
 
 template <class Key, class Value, class Compare>
-typename RedBlackTree<Key, Value, Compare>::Iterator
+typename RedBlackTree<Key, Value, Compare>::iterator
 RedBlackTree<Key, Value, Compare>::find(const Key &key) const {
   Node *current_node = root_;
   while (current_node != nil_.get() && current_node->key_ != key) {
@@ -532,8 +506,9 @@ void RedBlackTree<Key, Value, Compare>::printImageTree(Node *node, int depth,
   if (node == nil_.get())
     return;
   printImageTree(node->right_, depth + 1, '/');
-  std::cout << std::string(4 * depth, ' ') << branch << node->value_
-            << std::string(":") << node->color_ << std::endl;
+  std::cout << std::string(4 * depth, ' ') << branch << node->key_ << ":"
+            << branch << node->value_ << std::string(":") << node->color_
+            << std::endl;
   printImageTree(node->left_, depth + 1, '\\');
 }
 

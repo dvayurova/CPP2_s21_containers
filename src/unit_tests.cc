@@ -1165,23 +1165,25 @@ TEST(MapTest, TestDefaultConstructor) {
 }
 
 TEST(MapTest, TestInitializerList) {
-  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  s21::map<int, int> my_map = {std::pair<int, int>(2, 10),
+                               std::pair<int, int>(1, 5),
+                               std::pair<int, int>(3, 15)};
   std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
   EXPECT_EQ(my_map.size(), std_map.size());
 }
 
-// TEST(MapTest, TestCopyConstructor) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   s21::map<int, char> copy_map(my_map);
-//   auto i = my_map.begin();
-//   auto j = copy_map.begin();
-//   EXPECT_EQ(my_map.size(), copy_map.size());
-//   while (i != my_map.end() && j != copy_map.end()) {
-//     EXPECT_EQ(*i, *j);
-//     i++;
-//     j++;
-//   }
-// }
+TEST(MapTest, TestCopyConstructor) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  s21::map<int, char> copy_map(my_map);
+  auto i = my_map.begin();
+  auto j = copy_map.begin();
+  EXPECT_EQ(my_map.size(), copy_map.size());
+  while (i != my_map.end() && j != copy_map.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+}
 
 TEST(MapTest, TestMoveConstructor) {
   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
@@ -1190,17 +1192,17 @@ TEST(MapTest, TestMoveConstructor) {
   EXPECT_EQ(copy_map.size(), 3);
 }
 
-// TEST(MapTest, TestCopyOperator) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   s21::map<int, char> copy_map = my_map;
-//   auto i = my_map.begin();
-//   auto j = copy_map.begin();
-//   while (i != my_map.end() && j != copy_map.end()) {
-//     EXPECT_EQ(*i, *j);
-//     i++;
-//     j++;
-//   }
-// }
+TEST(MapTest, TestCopyOperator) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  s21::map<int, char> copy_map = my_map;
+  auto i = my_map.begin();
+  auto j = copy_map.begin();
+  while (i != my_map.end() && j != copy_map.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+}
 
 TEST(MapTest, TestMoveOperator) {
   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
@@ -1209,21 +1211,21 @@ TEST(MapTest, TestMoveOperator) {
   EXPECT_EQ(copy_map.size(), 3);
 }
 
-// TEST(MapTest, TestAt) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   for (int i = 1; i <= 3; i++) {
-//     EXPECT_EQ(my_map.at(i), std_map.at(i));
-//   }
-// }
+TEST(MapTest, TestAt) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  for (int i = 1; i <= 3; i++) {
+    EXPECT_EQ(my_map.at(i), std_map.at(i));
+  }
+}
 
-// TEST(MapTest, TestReferenceOperator) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   for (int i = 1; i <= 3; i++) {
-//     EXPECT_EQ(my_map[i], std_map[i]);
-//   }
-// }
+TEST(MapTest, TestReferenceOperator) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  for (int i = 1; i <= 3; i++) {
+    EXPECT_EQ(my_map[i], std_map[i]);
+  }
+}
 
 TEST(MapTest, TestEmpty) {
   s21::map<int, char> my_empty_map;
@@ -1256,110 +1258,128 @@ TEST(MapTest, TestClear) {
   EXPECT_EQ(string_map.size(), string_map_std.size());
 }
 
-// TEST(MapTest, TestInsertPair) {
-//   s21::map<int, std::string> string_map = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   std::map<int, std::string> string_map_std = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   bool my_result = string_map.insert(std::pair{4, "four"}).second;
-//   bool std_result = string_map_std.insert(std::pair{4, "four"}).second;
-//   EXPECT_EQ(my_result, std_result);
-//   auto i = string_map.begin();
-//   auto j = string_map_std.begin();
-//   while (i != string_map.end() && j != string_map_std.end()) {
-//     EXPECT_EQ(*i, *j);
-//     i++;
-//     j++;
-//   }
-// }
+TEST(MapTest, TestInsertPair) {
+  s21::map<int, std::string> string_map = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  std::map<int, std::string> string_map_std = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  bool my_result = string_map.insert(std::pair{4, "four"}).second;
+  bool std_result = string_map_std.insert(std::pair{4, "four"}).second;
+  EXPECT_EQ(my_result, std_result);
+  auto i = string_map.begin();
+  auto j = string_map_std.begin();
+  while (i != string_map.end() && j != string_map_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+}
 
-// TEST(MapTest, TestInsertKeyValue) {
-//   s21::map<int, std::string> string_map = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   std::map<int, std::string> string_map_std = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   bool my_result = string_map.insert(4, "four").second;
-//   bool std_result = string_map_std.insert(std::pair{4, "four"}).second;
-//   EXPECT_EQ(my_result, std_result);
-//   auto i = string_map.begin();
-//   auto j = string_map_std.begin();
-//   while (i != string_map.end() && j != string_map_std.end()) {
-//     EXPECT_EQ(*i, *j);
-//     i++;
-//     j++;
-//   }
-// }
+TEST(MapTest, TestInsertKeyValue) {
+  s21::map<int, std::string> string_map = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  std::map<int, std::string> string_map_std = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  bool my_result = string_map.insert(4, "four").second;
+  bool std_result = string_map_std.insert(std::pair{4, "four"}).second;
+  EXPECT_EQ(my_result, std_result);
+  auto i = string_map.begin();
+  auto j = string_map_std.begin();
+  while (i != string_map.end() && j != string_map_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+}
 
-// TEST(MapTest, TestInsertOrAssign) {
-//   s21::map<int, std::string> string_map = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   std::map<int, std::string> string_map_std = {
-//       {1, "one"}, {2, "two"}, {3, "three"}};
-//   bool my_result = string_map.insert_or_assign(3, "assign").second;
-//   bool std_result = string_map_std.insert_or_assign(3, "assign").second;
-//   EXPECT_EQ(my_result, std_result);
-//   my_result = string_map.insert_or_assign(4, "four").second;
-//   std_result = string_map_std.insert_or_assign(4, "four").second;
-//   EXPECT_EQ(my_result, std_result);
-//   auto i = string_map.begin();
-//   auto j = string_map_std.begin();
-//   while (i != string_map.end() && j != string_map_std.end()) {
-//     EXPECT_EQ(*i, *j);
-//     i++;
-//     j++;
-//   }
-// }
+TEST(MapTest, TestInsertKeyValue2) {
+  s21::map<int, std::string> string_map = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  std::map<int, std::string> string_map_std = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  bool my_result = string_map.insert(2, "two").second;
+  bool std_result = string_map_std.insert(std::pair{2, "two"}).second;
+  EXPECT_EQ(my_result, std_result);
+  auto i = string_map.begin();
+  auto j = string_map_std.begin();
+  while (i != string_map.end() && j != string_map_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+  EXPECT_EQ(string_map.size(), string_map_std.size());
+}
 
-// TEST(MapTest, TestErase) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   my_map.erase(my_map.begin());
-//   std_map.erase(std_map.begin());
-//   s21::map<int, char>::iterator i = my_map.begin();
-//   std::map<int, char>::iterator j = std_map.begin();
-//   while (i != my_map.end() && j != std_map.end()) {
-//     EXPECT_EQ(*i, *j);
-//     i++;
-//     j++;
-//   }
-//   EXPECT_EQ(my_map.size(), std_map.size());
-// }
+TEST(MapTest, TestInsertOrAssign) {
+  s21::map<int, std::string> string_map = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  std::map<int, std::string> string_map_std = {
+      {1, "one"}, {2, "two"}, {3, "three"}};
+  bool my_result = string_map.insert_or_assign(3, "assign").second;
+  bool std_result = string_map_std.insert_or_assign(3, "assign").second;
+  EXPECT_EQ(my_result, std_result);
+  my_result = string_map.insert_or_assign(4, "four").second;
+  std_result = string_map_std.insert_or_assign(4, "four").second;
+  EXPECT_EQ(my_result, std_result);
+  auto i = string_map.begin();
+  auto j = string_map_std.begin();
+  while (i != string_map.end() && j != string_map_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+}
 
-// TEST(MapTest, TestSwap) {
-//   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   s21::map<int, char> empty_map;
-//   std::map<int, char> empty_map_std;
-//   my_map.swap(empty_map);
-//   std_map.swap(empty_map_std);
-//   s21::map<int, char>::iterator i = empty_map.begin();
-//   std::map<int, char>::iterator j = empty_map_std.begin();
-//   while (i != empty_map.end() && j != empty_map_std.end()) {
-//     EXPECT_EQ(*i, *j);
-//     i++;
-//     j++;
-//   }
-//   EXPECT_EQ(my_map.size(), std_map.size());
-//   EXPECT_EQ(empty_map.size(), empty_map_std.size());
-//   EXPECT_EQ(my_map.empty(), std_map.empty());
-// }
+TEST(MapTest, TestErase) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  my_map.erase(my_map.begin());
+  std_map.erase(std_map.begin());
+  s21::map<int, char>::iterator i = my_map.begin();
+  std::map<int, char>::iterator j = std_map.begin();
+  while (i != my_map.end() && j != std_map.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+  EXPECT_EQ(my_map.size(), std_map.size());
+}
 
-// TEST(MapTest, TestMerge) {
-//   s21::map<int, char> first = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   std::map<int, char> first_std = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-//   s21::map<int, char> second = {{2, 'b'}, {3, 'c'}, {4, 'd'}, {5, 'f'}};
-//   std::map<int, char> second_std = {{2, 'b'}, {3, 'c'}, {4, 'd'}, {5, 'f'}};
-//   first.merge(second);
-//   first_std.merge(second_std);
-//   s21::map<int, char>::iterator i = first.begin();
-//   std::map<int, char>::iterator j = first_std.begin();
-//   while (i != first.end() && j != first_std.end()) {
-//     EXPECT_EQ(*i, *j);
-//     i++;
-//     j++;
-//   }
-//   EXPECT_EQ(first.size(), first_std.size());
-// }
+TEST(MapTest, TestSwap) {
+  s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  s21::map<int, char> empty_map;
+  std::map<int, char> empty_map_std;
+  my_map.swap(empty_map);
+  std_map.swap(empty_map_std);
+  s21::map<int, char>::iterator i = empty_map.begin();
+  std::map<int, char>::iterator j = empty_map_std.begin();
+  while (i != empty_map.end() && j != empty_map_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+  EXPECT_EQ(my_map.size(), std_map.size());
+  EXPECT_EQ(empty_map.size(), empty_map_std.size());
+  EXPECT_EQ(my_map.empty(), std_map.empty());
+}
+
+TEST(MapTest, TestMerge) {
+  s21::map<int, char> first = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  std::map<int, char> first_std = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
+  s21::map<int, char> second = {{2, 'b'}, {3, 'c'}, {4, 'd'}, {5, 'f'}};
+  std::map<int, char> second_std = {{2, 'b'}, {3, 'c'}, {4, 'd'}, {5, 'f'}};
+  first.merge(second);
+  first_std.merge(second_std);
+  s21::map<int, char>::iterator i = first.begin();
+  std::map<int, char>::iterator j = first_std.begin();
+  while (i != first.end() && j != first_std.end()) {
+    EXPECT_EQ(*i, *j);
+    i++;
+    j++;
+  }
+  EXPECT_EQ(first.size(), first_std.size());
+}
 
 TEST(MapTest, TestContains) {
   s21::map<int, char> my_map = {
