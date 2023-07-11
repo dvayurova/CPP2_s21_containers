@@ -62,7 +62,6 @@ private:
   size_type capacity_;
   void zero_vector();
   void memory_allocation(size_t n);
-  void move_vector(vector &&v);
   void change_capacity(size_t n);
 };
 

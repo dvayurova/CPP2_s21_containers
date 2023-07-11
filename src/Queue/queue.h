@@ -12,7 +12,7 @@ public:
   using size_type = typename Container::size_type;
 
   queue() : baseClass(){};
-  queue(std::initializer_list<T> const &items) : baseClass(items){};
+  queue(std::initializer_list<value_type> const &items) : baseClass(items){};
   queue(const queue &q) : baseClass(q.baseClass){};
   queue(queue &&q) noexcept : baseClass(std::move(q.baseClass)){};
   queue &operator=(queue &&q) noexcept {

@@ -16,7 +16,11 @@ template <class T> vector<T>::vector(const vector &v) {
   std::copy(v.vector_, v.vector_ + v.size_, vector_);
 }
 
-template <class T> vector<T>::vector(vector &&v) noexcept { move_vector(v); }
+template <class T>
+vector<T>::vector(vector &&v) noexcept
+    : vector_(v.vector_), size_(v.size_), capacity_(v.capacity_) {
+  v.zero_vector();
+}
 
 template <class T> vector<T>::~vector() {
   delete[] vector_;
@@ -26,7 +30,10 @@ template <class T> vector<T>::~vector() {
 template <class T> vector<T> &vector<T>::operator=(vector &&v) noexcept {
   if (this != &v) {
     delete[] vector_;
-    move_vector(v);
+    size_ = v.size_;
+    capacity_ = v.capacity_;
+    vector_ = v.vector_;
+    v.zero_vector();
   }
   return *this;
 }
@@ -188,13 +195,6 @@ template <class T> void vector<T>::memory_allocation(size_t n) {
   size_ = n;
   capacity_ = size_;
   vector_ = new T[size_]{};
-}
-
-template <class T> void vector<T>::move_vector(vector &&v) {
-  size_ = v.size_;
-  capacity_ = v.capacity_;
-  vector_ = v.vector_;
-  v.zero_vector();
 }
 
 template <class T> void vector<T>::change_capacity(size_t n) {

@@ -26,6 +26,7 @@ public:
   using iterator = ListIterator;
   using const_iterator = ListConstIterator;
   using size_type = size_t;
+  using difference_type = std::ptrdiff_t;
 
   list &operator=(const list &l);
   list &operator=(list &&l) noexcept;
@@ -57,8 +58,6 @@ public:
   iterator insert_many(const_iterator pos, Args &&...args);
   template <class... Args> void insert_many_back(Args &&...args);
   template <class... Args> void insert_many_front(Args &&...args);
-
-  void print();
 
 private:
   class Node {

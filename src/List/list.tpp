@@ -3,8 +3,7 @@
 namespace s21 {
 
 template <class value_type>
-list<value_type>::list()
-    : head_(nullptr), tail_(nullptr), fict_(nullptr), size_(0) {
+list<value_type>::list() : head_(nullptr), tail_(nullptr), fict_(nullptr) {
   init_list();
 }
 
@@ -65,17 +64,6 @@ template <class value_type> void list<value_type>::copy_object(const list &l) {
     current = current->ptr_prev_;
     count--;
   }
-}
-
-template <class value_type> void list<value_type>::print() {
-  Node *current = fict_;
-  for (int i = 0; i < size_ + 1; i++) {
-    std::cout << current << "  " << current->data_ << " " << current->ptr_prev_
-              << " " << current->ptr_next_ << "\n";
-    current = current->ptr_next_;
-  }
-  std::cout << "----------------------------------------------------------"
-            << "\n";
 }
 
 template <class value_type> void list<value_type>::move_object(list &l) {
@@ -398,8 +386,7 @@ template <class value_type> void list<value_type>::clear() {
   while (size_ > 0) {
     pop_front();
   }
-  head_ = nullptr;
-  tail_ = nullptr;
+  head_ = tail_ = nullptr;
 }
 
 template <class value_type>
@@ -446,7 +433,8 @@ typename list<value_type>::size_type list<value_type>::size() const {
 
 template <class value_type>
 typename list<value_type>::size_type list<value_type>::max_size() const {
-  return (std::numeric_limits<size_type>::max() / sizeof(Node) / 2);
+  return std::min<size_type>(std::allocator<value_type>().max_size(),
+                             std::numeric_limits<difference_type>::max());
 }
 
 template <class value_type> void list<value_type>::init_list() {
