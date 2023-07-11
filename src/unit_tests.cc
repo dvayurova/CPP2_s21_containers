@@ -37,6 +37,8 @@ public:
 };
 
 TEST_F(VectorTest, TestAt) {
+  int_vector.at(4) = 256;
+  int_vector_std.at(4) = 256;
   ASSERT_EQ(int_vector.at(4), int_vector_std.at(4));
 }
 
@@ -45,7 +47,9 @@ TEST_F(VectorTest, TestAtConst) {
 }
 
 TEST_F(VectorTest, TestReferenceOperator) {
-  ASSERT_EQ(float_vector[3], float_vector_std[3]);
+  int_vector[3] = 123;
+  int_vector_std[3] = 123;
+  ASSERT_EQ(int_vector[3], int_vector_std[3]);
 }
 
 TEST_F(VectorTest, TestReferenceOperatorConst) {
@@ -204,9 +208,40 @@ TEST_F(VectorTest, TestInsertMany) {
   }
 }
 
+TEST_F(VectorTest, TestInsertMany2) {
+  int_vector.insert_many(int_vector.begin() + 1, 4234, 23423, 234234, 432,
+                         2423423, 234242, 4234234, 4234234, 4324234, 42342342,
+                         2342342, 234234, 234234, 234, 23, 2, 11);
+  s21::vector<int> result{1,      4234,    23423,   234234,  432,      2423423,
+                          234242, 4234234, 4234234, 4324234, 42342342, 2342342,
+                          234234, 234234,  234,     23,      2,        11,
+                          2,      3,       4,       5,       6};
+  s21::vector<int>::iterator it = int_vector.begin();
+  s21::vector<int>::iterator it_res = result.begin();
+  while (it != int_vector.end() || it_res != result.end()) {
+    ASSERT_EQ(*it, *it_res);
+    ++it;
+    ++it_res;
+  }
+}
+
 TEST_F(VectorTest, TestInsertManyBack) {
   int_vector.insert_many_back(162342);
   int_vector_std.emplace_back(162342);
+  ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
+  while (!int_vector.empty() && !int_vector_std.empty()) {
+    ASSERT_EQ(int_vector.back(), int_vector_std.back());
+    int_vector.pop_back();
+    int_vector_std.pop_back();
+  }
+}
+
+TEST_F(VectorTest, TestInsertManyBack2) {
+  int_vector.insert_many_back(1, 2, 3, 4, 5, 6, 7, 8);
+  for (int i = 1; i <= 8; i++) {
+    int_vector_std.push_back(i);
+  }
   ASSERT_EQ(int_vector.size(), int_vector_std.size());
   ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
   while (!int_vector.empty() && !int_vector_std.empty()) {
@@ -471,10 +506,26 @@ public:
   std::list<int> list_std_2{5, 6, 7};
   s21::list<int> list_s21{1, 2, 3};
   s21::list<int> list_s21_2{5, 6, 7};
+  std::list<int> list_std_3 = {5, 0, 2};
+  s21::list<int> list_s21_3 = {5, 0, 2};
+  std::list<int> list_std_4 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  s21::list<int> list_s21_4 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
   std::list<std::string> list_str_std = {"I Love School"};
   s21::list<std::string> list_str_s21 = {"I Love School"};
   std::list<char> list_char_std = {'D', 'A', 'G'};
   s21::list<char> list_char_s21 = {'D', 'A', 'G'};
+  std::list<char> list_char_std_2 = {'a', 'b', 'b', 'a', 'c', 'x',
+                                     'y', 'y', 'y', 'z', 'z'};
+  s21::list<char> list_char_s21_2 = {'a', 'b', 'b', 'a', 'c', 'x',
+                                     'y', 'y', 'y', 'z', 'z'};
+  std::list<char> list_char_std_3 = {'y', 'c', 'z', 'a', 'a', 'x',
+                                     'w', 'v', 't', 'e', 'q'};
+  s21::list<char> list_char_s21_3 = {'y', 'c', 'z', 'a', 'a', 'x',
+                                     'w', 'v', 't', 'e', 'q'};
+  std::list<std::string> std_kazan = {"I study ", " in Kazan"};
+  std::list<std::string> std_school = {" at school ", "s21"};
+  s21::list<std::string> s21_kazan = {"I study ", " in Kazan"};
+  s21::list<std::string> s21_school = {" at school ", "s21"};
 };
 
 TEST_F(TestList, Constructor_Default) {
@@ -638,84 +689,61 @@ TEST_F(TestList, Test_Swap) {
 }
 
 TEST_F(TestList, Test_Merge) {
-  std::list<int> list1 = {4, 5, 6};
-  std::list<int> list11 = {5, 0, 2};
-
-  s21::list<int> list2 = {4, 5, 6};
-  s21::list<int> list22 = {5, 0, 2};
-
-  list1.merge(list11);
-  list2.merge(list22);
-
-  EXPECT_EQ(list11.size(), list22.size());
-
-  auto it = list1.begin();
-  for (auto i = list1.begin(); i != list1.end(); ++i, ++it) {
+  list_std_2.merge(list_std_3);
+  list_s21_2.merge(list_s21_3);
+  EXPECT_EQ(list_std_3.size(), list_s21_3.size());
+  auto it = list_std_2.begin();
+  for (auto i = list_std_2.begin(); i != list_std_2.end(); ++i, ++it) {
     EXPECT_EQ(*i, *it);
   }
 }
 
 TEST_F(TestList, Test_Splice) {
-  std::list<std::string> list1 = {"I study ", " in Kazan"};
-  std::list<std::string> list11 = {" at school ", "s21"};
-
-  s21::list<std::string> list2 = {"I study ", " in Kazan"};
-  s21::list<std::string> list22 = {" at school ", "s21"};
-
-  auto it1 = list1.begin();
+  auto it1 = std_kazan.begin();
   ++it1;
-  list1.splice(it1, list11);
-
-  auto it2 = list2.begin();
+  std_kazan.splice(it1, std_school);
+  auto it2 = s21_kazan.begin();
   ++it2;
-  list2.splice(it2, list22);
-  it1 = list1.begin();
-  it2 = list2.begin();
-  EXPECT_EQ(list11.size(), list22.size());
-  for (; it1 != list1.end(); it1++, it2++) {
+  s21_kazan.splice(it2, s21_school);
+  it1 = std_kazan.begin();
+  it2 = s21_kazan.begin();
+  EXPECT_EQ(std_school.size(), s21_school.size());
+  for (; it1 != std_kazan.end(); it1++, it2++) {
     EXPECT_EQ(*it1, *it2);
   }
 }
 
 TEST_F(TestList, Test_Reverse) {
-  std::list<int> list1 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-  s21::list<int> list2 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-  list1.reverse();
-  list2.reverse();
-  auto it2 = list2.begin();
-  for (auto it1 = list1.begin(); it1 != list1.end(); ++it2, ++it1) {
+  list_std_4.reverse();
+  list_s21_4.reverse();
+  auto it2 = list_s21_4.begin();
+  for (auto it1 = list_std_4.begin(); it1 != list_std_4.end(); ++it2, ++it1) {
     EXPECT_EQ(*it1, *it2);
   }
 }
 
 TEST_F(TestList, Test_Unique) {
-  std::list<char> list1 = {'a', 'b', 'b', 'a', 'c', 'x',
-                           'y', 'y', 'y', 'z', 'z'};
-  s21::list<char> list2 = {'a', 'b', 'b', 'a', 'c', 'x',
-                           'y', 'y', 'y', 'z', 'z'};
-  list1.unique();
-  list2.unique();
-  auto it1 = list1.begin();
-  EXPECT_EQ(list1.size(), list2.size());
-  for (auto it2 = list2.begin(); it2 != list2.end(); ++it1, ++it2) {
+  list_char_std_2.unique();
+  list_char_s21_2.unique();
+  auto it1 = list_char_std_2.begin();
+  EXPECT_EQ(list_char_std_2.size(), list_char_s21_2.size());
+  for (auto it2 = list_char_s21_2.begin(); it2 != list_char_s21_2.end();
+       ++it1, ++it2) {
     EXPECT_EQ(*it1, *it2);
   }
 }
 
 TEST_F(TestList, Test_Sort) {
-  std::list<char> list1 = {'y', 'c', 'z', 'a', 'a', 'x',
-                           'w', 'v', 't', 'e', 'q'};
-  s21::list<char> list2 = {'y', 'c', 'z', 'a', 'a', 'x',
-                           'w', 'v', 't', 'e', 'q'};
-  list1.sort();
-  list2.sort();
-  auto it1 = list1.begin();
-  EXPECT_EQ(list1.size(), list2.size());
-  for (auto it2 = list2.begin(); it2 != list2.end(); ++it1, ++it2) {
+  list_char_std_3.sort();
+  list_char_s21_3.sort();
+  auto it1 = list_char_std_3.begin();
+  EXPECT_EQ(list_char_std_3.size(), list_char_s21_3.size());
+  for (auto it2 = list_char_s21_3.begin(); it2 != list_char_s21_3.end();
+       ++it1, ++it2) {
     EXPECT_EQ(*it1, *it2);
   }
 }
+
 TEST_F(TestList, Test_InsertMany) {
   std::list<int> std_lst{1, 2, 3, 4, 5};
   auto std_it = std_lst.begin();
@@ -1241,8 +1269,12 @@ TEST(MapTest, TestInsertOrAssign) {
 TEST(MapTest, TestErase) {
   s21::map<int, char> my_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
   std::map<int, char> std_map = {{1, 'a'}, {2, 'b'}, {3, 'c'}};
-  my_map.erase(my_map.begin());
-  std_map.erase(std_map.begin());
+  auto it = my_map.begin();
+  it++;
+  auto it_std = std_map.begin();
+  it_std++;
+  my_map.erase(it);
+  std_map.erase(it_std);
   s21::map<int, char>::iterator i = my_map.begin();
   std::map<int, char>::iterator j = std_map.begin();
   while (i != my_map.end() && j != std_map.end()) {

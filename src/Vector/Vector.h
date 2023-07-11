@@ -27,8 +27,10 @@ public:
   vector<T> &operator=(vector &&v) noexcept;
   vector<T> &operator=(const vector &v);
 
-  reference at(size_type pos) const;
-  reference operator[](size_type pos) const;
+  reference at(size_type pos);
+  const_reference at(size_type pos) const;
+  reference operator[](size_type pos);
+  const_reference operator[](size_type pos) const;
   const_reference front() const;
   const_reference back() const;
   iterator data();
