@@ -1,12 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "List/list.h"
-#include "Queue/queue.h"
-#include "Stack/stack.h"
-#include "Tree/map.h"
-#include "Tree/multiset.h"
-#include "Tree/set.h"
-#include "Vector/vector.h"
+#include "s21_containers.h"
+#include "s21_containersplus.h"
+
 #include <list>
 #include <map>
 #include <queue>
