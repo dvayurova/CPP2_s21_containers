@@ -146,12 +146,40 @@ TEST_F(VectorTest, TestInsert) {
   ASSERT_EQ(char_vector_std.capacity(), char_vector_std.capacity());
 }
 
+TEST_F(VectorTest, TestInsert2) {
+  int_vector.insert(int_vector.begin() + 1, 444);
+  int_vector_std.insert(int_vector_std.begin() + 1, 444);
+  s21::vector<int>::iterator it = int_vector.begin();
+  std::vector<int>::iterator it_std = int_vector_std.begin();
+  while (it != int_vector.end() || it_std != int_vector_std.end()) {
+    ASSERT_EQ(*it, *it_std);
+    ++it;
+    ++it_std;
+  }
+  ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
+}
+
 TEST_F(VectorTest, TestErase) {
   char_vector.erase(char_vector.end() - 1);
   char_vector_std.erase(char_vector_std.end() - 1);
   ASSERT_EQ(char_vector_std.back(), char_vector_std.back());
   ASSERT_EQ(char_vector_std.size(), char_vector_std.size());
   ASSERT_EQ(char_vector_std.capacity(), char_vector_std.capacity());
+}
+
+TEST_F(VectorTest, TestErase2) {
+  int_vector.erase(int_vector.begin() + 1);
+  int_vector_std.erase(int_vector_std.begin() + 1);
+  s21::vector<int>::iterator it = int_vector.begin();
+  std::vector<int>::iterator it_std = int_vector_std.begin();
+  while (it != int_vector.end() || it_std != int_vector_std.end()) {
+    ASSERT_EQ(*it, *it_std);
+    ++it;
+    ++it_std;
+  }
+  ASSERT_EQ(int_vector.size(), int_vector_std.size());
+  ASSERT_EQ(int_vector.capacity(), int_vector_std.capacity());
 }
 
 TEST_F(VectorTest, TestPushBack) {

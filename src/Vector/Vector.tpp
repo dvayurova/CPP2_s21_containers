@@ -120,23 +120,10 @@ typename vector<T>::iterator vector<T>::insert(const_iterator pos,
     throw std::out_of_range("range check pos >= size_");
   }
   size_t position = pos - begin();
-  if (size_ + 1 > capacity_) {
-    reserve(size_ * 2);
+  push_back(value);
+  for (size_t i = size_ - 1; i > position; i--) {
+    std::swap(vector_[i], vector_[i - 1]);
   }
-  size_t k = 0;
-  size_ += 1;
-  T *tmp_vector = new T[size_];
-  for (size_t i = 0; i < size_; i++) {
-    if (i == position) {
-      tmp_vector[i] = value;
-      k--;
-    } else {
-      tmp_vector[i] = vector_[k];
-    }
-    k++;
-  }
-  delete[] vector_;
-  vector_ = tmp_vector;
   return vector_ + position;
 }
 
@@ -145,28 +132,18 @@ template <class T> void vector<T>::erase(iterator pos) {
     throw std::out_of_range("range check pos >= size_");
   }
   size_t position = pos - begin();
-  size_t k = 0;
-  T *tmp_vector = new T[size_ - 1];
-  for (size_t i = 0; i < size_; i++) {
-    if (i != position) {
-      tmp_vector[k] = vector_[i];
-      k++;
-    }
+  for (size_t i = position; i < size_ - 1; i++) {
+    std::swap(vector_[i], vector_[i + 1]);
   }
-  delete[] vector_;
-  vector_ = tmp_vector;
   size_ -= 1;
 }
 
 template <class T> void vector<T>::push_back(const_reference value) {
-  if (size_ + 1 <= capacity_) {
-    vector_[size_] = value;
-    size_ += 1;
-  } else {
+  if (size_ + 1 > capacity_) {
     reserve(size_ * 2);
-    vector_[size_] = value;
-    size_ += 1;
   }
+  vector_[size_] = value;
+  size_ += 1;
 }
 
 template <class T> void vector<T>::pop_back() {
